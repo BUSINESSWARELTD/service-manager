@@ -124,7 +124,7 @@ export default function TechniciansScreen() {
                   {tech.isActive ? "Active" : "Inactive"}
                 </Text>
               </View>
-              {tech.isActive && tech.id !== me?.id && (
+              {tech.isActive && (
                 <TouchableOpacity
                   style={styles.deactivateBtn}
                   onPress={() => handleDeactivate(tech)}
