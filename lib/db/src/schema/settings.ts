@@ -18,6 +18,8 @@ export const settingsTable = pgTable("settings", {
   printerPort: integer("printer_port").default(9100),
   smsTemplate: text("sms_template").default("Your device {{deviceBrand}} {{deviceModel}} (Service ID: {{serviceId}}) is ready for pickup. Please visit us at your earliest convenience."),
   emailTemplate: text("email_template").default("Dear {{customerName}},\n\nYour device {{deviceBrand}} {{deviceModel}} (Service ID: {{serviceId}}) has been repaired and is ready for pickup.\n\nThank you for choosing our service."),
+  deviceBrands: text("device_brands"),
+  commonIssues: text("common_issues"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 

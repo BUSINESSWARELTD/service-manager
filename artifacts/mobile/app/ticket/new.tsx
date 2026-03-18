@@ -12,15 +12,15 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Colors from "@/constants/colors";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
-const COMMON_BRANDS = ["Apple", "Samsung", "Google", "Huawei", "OnePlus", "Xiaomi", "Sony", "LG", "Dell", "HP", "Lenovo", "Asus", "Acer", "Other"];
-const COMMON_PROBLEMS = [
+const DEFAULT_BRANDS = ["Apple", "Samsung", "Google", "Huawei", "OnePlus", "Xiaomi", "Sony", "LG", "Dell", "HP", "Lenovo", "Asus", "Acer", "Other"];
+const DEFAULT_ISSUES = [
   "Screen cracked / broken",
   "Battery draining fast",
   "Won't charge",
@@ -35,11 +35,21 @@ const COMMON_PROBLEMS = [
   "Software issue",
 ];
 
+function parseJsonArray(val: string | null | undefined, fallback: string[]): string[] {
+  if (!val) return fallback;
+  try { const parsed = JSON.parse(val); return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback; }
+  catch { return fallback; }
+}
+
 export default function NewTicketScreen() {
   const insets = useSafeAreaInsets();
   const { technician } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+
+  const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: () => api.settings.get() });
+  const COMMON_BRANDS = parseJsonArray((settings as Record<string, string> | undefined)?.deviceBrands, DEFAULT_BRANDS);
+  const COMMON_PROBLEMS = parseJsonArray((settings as Record<string, string> | undefined)?.commonIssues, DEFAULT_ISSUES);
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
