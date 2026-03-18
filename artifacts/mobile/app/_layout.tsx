@@ -79,6 +79,26 @@ export default function RootLayout() {
                     headerTintColor: "#FF6B35",
                   }}
                 />
+                <Stack.Screen
+                  name="technicians"
+                  options={{
+                    headerShown: true,
+                    headerTitle: "Technicians",
+                    headerBackTitle: "Back",
+                    headerStyle: { backgroundColor: "#fff" },
+                    headerTintColor: "#FF6B35",
+                  }}
+                />
+                <Stack.Screen
+                  name="parts"
+                  options={{
+                    headerShown: true,
+                    headerTitle: "Parts Inventory",
+                    headerBackTitle: "Back",
+                    headerStyle: { backgroundColor: "#fff" },
+                    headerTintColor: "#FF6B35",
+                  }}
+                />
               </Stack>
             </GestureHandlerRootView>
           </QueryClientProvider>
