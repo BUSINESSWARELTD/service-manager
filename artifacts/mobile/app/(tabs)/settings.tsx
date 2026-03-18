@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -112,6 +113,18 @@ export default function SettingsScreen() {
       Alert.alert("Error", "Failed to save settings");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDownloadManual = async () => {
+    const domain = process.env.EXPO_PUBLIC_DOMAIN;
+    const url = domain
+      ? `https://${domain}/api/download/manual`
+      : "/api/download/manual";
+    try {
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert("Σφάλμα", "Δεν ήταν δυνατό το άνοιγμα του εγχειριδίου.");
     }
   };
 
@@ -267,6 +280,23 @@ export default function SettingsScreen() {
         <TouchableOpacity style={styles.actionRow} onPress={() => router.push("/parts")}>
           <Text style={styles.actionRowText}>Manage Parts Inventory</Text>
           <Ionicons name="chevron-forward" size={18} color={Colors.light.textSecondary} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Documentation */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="document-text-outline" size={20} color={Colors.brand.primary} />
+          <Text style={styles.sectionTitle}>Εγχειρίδιο Χρήσης</Text>
+        </View>
+        <TouchableOpacity style={styles.actionRow} onPress={handleDownloadManual}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.actionRowText}>Λήψη Εγχειριδίου (PDF)</Text>
+            <Text style={{ fontSize: 12, color: Colors.light.textSecondary, marginTop: 2 }}>
+              Service Manager v1.0 — Λύσεις Επιχειρηματικού Λογισμικού
+            </Text>
+          </View>
+          <Ionicons name="download-outline" size={20} color={Colors.brand.primary} />
         </TouchableOpacity>
       </View>
 
