@@ -40,6 +40,8 @@ export default function TechniciansScreen() {
   const [pin, setPin] = useState("");
   const [role, setRole] = useState<"technician" | "manager">("technician");
   const [saving, setSaving] = useState(false);
+  const [confirmTech, setConfirmTech] = useState<Technician | null>(null);
+  const [deactivating, setDeactivating] = useState(false);
 
   const { data: technicians = [], isLoading } = useQuery({
     queryKey: ["technicians"],
@@ -48,29 +50,26 @@ export default function TechniciansScreen() {
 
   const handleDeactivate = (tech: Technician) => {
     if (tech.id === me?.id) {
-      Alert.alert("Αδύνατο", "Δεν μπορείτε να απενεργοποιήσετε τον εαυτό σας.");
+      setConfirmTech({ ...tech, _selfError: true } as Technician & { _selfError?: boolean });
       return;
     }
-    Alert.alert(
-      "Απενεργοποίηση Τεχνικού",
-      `Ο/Η "${tech.name}" θα απενεργοποιηθεί και δεν θα μπορεί να συνδεθεί. Το ιστορικό tickets διατηρείται. Συνέχεια;`,
-      [
-        { text: "Άκυρο", style: "cancel" },
-        {
-          text: "Απενεργοποίηση",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await api.technicians.deactivate(tech.id);
-              await queryClient.invalidateQueries({ queryKey: ["technicians"] });
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            } catch (e: unknown) {
-              Alert.alert("Σφάλμα", e instanceof Error ? e.message : "Αποτυχία απενεργοποίησης");
-            }
-          },
-        },
-      ]
-    );
+    setConfirmTech(tech);
+  };
+
+  const doDeactivate = async () => {
+    if (!confirmTech) return;
+    setDeactivating(true);
+    try {
+      await api.technicians.deactivate(confirmTech.id);
+      await queryClient.invalidateQueries({ queryKey: ["technicians"] });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setConfirmTech(null);
+    } catch (e: unknown) {
+      setConfirmTech(null);
+      Alert.alert("Σφάλμα", e instanceof Error ? e.message : "Αποτυχία απενεργοποίησης");
+    } finally {
+      setDeactivating(false);
+    }
   };
 
   const handleCreate = async () => {
@@ -145,6 +144,47 @@ export default function TechniciansScreen() {
         </ScrollView>
       )}
 
+      {/* Confirmation Modal */}
+      <Modal visible={!!confirmTech} animationType="fade" transparent>
+        <View style={[styles.modalOverlay, { justifyContent: "center" }]}>
+          <View style={[styles.modalSheet, { borderRadius: 20, marginHorizontal: 24 }]}>
+            {(confirmTech as (Technician & { _selfError?: boolean }) | null)?._selfError ? (
+              <>
+                <View style={styles.confirmIcon}>
+                  <Ionicons name="warning-outline" size={32} color="#F59E0B" />
+                </View>
+                <Text style={styles.confirmTitle}>Αδύνατο</Text>
+                <Text style={styles.confirmText}>Δεν μπορείτε να απενεργοποιήσετε τον εαυτό σας ενώ είστε συνδεδεμένοι.</Text>
+                <TouchableOpacity style={[styles.confirmBtn, { backgroundColor: Colors.light.card, marginTop: 0 }]} onPress={() => setConfirmTech(null)}>
+                  <Text style={[styles.confirmBtnText, { color: Colors.light.text }]}>Εντάξει</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <View style={styles.confirmIcon}>
+                  <Ionicons name="person-remove-outline" size={32} color="#EF4444" />
+                </View>
+                <Text style={styles.confirmTitle}>Απενεργοποίηση Τεχνικού</Text>
+                <Text style={styles.confirmText}>
+                  Ο/Η <Text style={{ fontFamily: "Inter_700Bold", color: Colors.light.text }}>{confirmTech?.name}</Text> θα απενεργοποιηθεί και δεν θα μπορεί να συνδεθεί.{"\n\n"}Το ιστορικό tickets διατηρείται.
+                </Text>
+                <View style={styles.confirmActions}>
+                  <TouchableOpacity style={[styles.confirmBtn, { backgroundColor: Colors.light.card }]} onPress={() => setConfirmTech(null)} disabled={deactivating}>
+                    <Text style={[styles.confirmBtnText, { color: Colors.light.text }]}>Άκυρο</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.confirmBtn, { backgroundColor: "#EF4444" }]} onPress={doDeactivate} disabled={deactivating}>
+                    {deactivating
+                      ? <ActivityIndicator size="small" color="#fff" />
+                      : <Text style={[styles.confirmBtnText, { color: "#fff" }]}>Απενεργοποίηση</Text>
+                    }
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
+
       <Modal visible={showModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
@@ -213,6 +253,12 @@ const styles = StyleSheet.create({
   statusBadgeInactive: { backgroundColor: "#F1F5F9" },
   statusBadgeTextInactive: { color: Colors.light.textSecondary },
   deactivateBtn: { padding: 6, marginLeft: 4 },
+  confirmIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: "#FEF2F2", justifyContent: "center", alignItems: "center", alignSelf: "center", marginBottom: 16 },
+  confirmTitle: { fontSize: 18, fontFamily: "Inter_700Bold", color: Colors.light.text, textAlign: "center", marginBottom: 10 },
+  confirmText: { fontSize: 14, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary, textAlign: "center", lineHeight: 22, marginBottom: 24 },
+  confirmActions: { flexDirection: "row", gap: 10 },
+  confirmBtn: { flex: 1, height: 48, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+  confirmBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
   empty: { alignItems: "center", paddingTop: 60, gap: 12 },
   emptyText: { fontSize: 16, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary },
   modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
