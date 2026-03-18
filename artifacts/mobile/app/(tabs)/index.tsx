@@ -24,7 +24,7 @@ import { api } from "@/lib/api";
 const STATUSES = [
   { key: "all", label: "All" },
   { key: "received", label: "Received" },
-  { key: "diagnosing", label: "Diagnosing" },
+  { key: "diagnosing", label: "Diagnose" },
   { key: "repairing", label: "Repairing" },
   { key: "waiting_for_parts", label: "Waiting" },
   { key: "ready_for_pickup", label: "Ready" },
@@ -134,12 +134,7 @@ export default function TicketsScreen() {
       </View>
 
       {/* Status Filter Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterRow}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
-      >
+      <View style={styles.filterRow}>
         {STATUSES.map(s => (
           <TouchableOpacity
             key={s.key}
@@ -162,7 +157,7 @@ export default function TicketsScreen() {
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       {/* Ticket List */}
       {isLoading ? (
@@ -291,11 +286,15 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   filterRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: 16,
+    gap: 8,
     marginBottom: 12,
   },
   filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 20,
     backgroundColor: Colors.light.card,
     borderWidth: 1,
