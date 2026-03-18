@@ -1,22 +1,31 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Service Management System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: tickets
+    description: Service ticket operations
+  - name: parts
+    description: Parts and inventory operations
+  - name: technicians
+    description: Technician operations
+  - name: settings
+    description: Admin settings
+  - name: notifications
+    description: Notification operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,658 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /tickets:
+    get:
+      operationId: listTickets
+      tags: [tickets]
+      summary: List all tickets
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/TicketStatus"
+        - name: technicianId
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ticket"
+
+    post:
+      operationId: createTicket
+      tags: [tickets]
+      summary: Create a new service ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTicketBody"
+      responses:
+        "201":
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}:
+    get:
+      operationId: getTicket
+      tags: [tickets]
+      summary: Get a ticket by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Ticket detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      operationId: updateTicket
+      tags: [tickets]
+      summary: Update a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTicketBody"
+      responses:
+        "200":
+          description: Ticket updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/by-service-id/{serviceId}:
+    get:
+      operationId: getTicketByServiceId
+      tags: [tickets]
+      summary: Get ticket by service ID (for barcode scan)
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ticket detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/status:
+    patch:
+      operationId: updateTicketStatus
+      tags: [tickets]
+      summary: Change ticket status (enforces business rules)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusBody"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+        "400":
+          description: Business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/parts:
+    get:
+      operationId: listTicketParts
+      tags: [tickets]
+      summary: List parts for a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Parts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TicketPart"
+
+    post:
+      operationId: addTicketPart
+      tags: [tickets]
+      summary: Add a part to a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddPartBody"
+      responses:
+        "201":
+          description: Part added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketPart"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/parts/{partId}:
+    delete:
+      operationId: removeTicketPart
+      tags: [tickets]
+      summary: Remove a part from a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: partId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Part removed
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/labor:
+    get:
+      operationId: listLaborEntries
+      tags: [tickets]
+      summary: List labor entries for a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Labor entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LaborEntry"
+
+    post:
+      operationId: addLaborEntry
+      tags: [tickets]
+      summary: Add or start a labor entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddLaborBody"
+      responses:
+        "201":
+          description: Labor entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LaborEntry"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/labor/{laborId}/stop:
+    patch:
+      operationId: stopLaborTimer
+      tags: [tickets]
+      summary: Stop a running labor timer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: laborId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Timer stopped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LaborEntry"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/work-summary:
+    post:
+      operationId: submitWorkSummary
+      tags: [tickets]
+      summary: Submit work summary (required for Ready for Pickup)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkSummaryBody"
+      responses:
+        "200":
+          description: Work summary submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tickets/{id}/audit-log:
+    get:
+      operationId: getAuditLog
+      tags: [tickets]
+      summary: Get audit log for a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Audit log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditEntry"
+
+  /tickets/{id}/notes:
+    post:
+      operationId: addTicketNote
+      tags: [tickets]
+      summary: Add a note to a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddNoteBody"
+      responses:
+        "201":
+          description: Note added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditEntry"
+
+  /public/status/{serviceId}:
+    get:
+      operationId: getPublicStatus
+      tags: [tickets]
+      summary: Public status page (no auth required)
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Public ticket status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicStatus"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /parts:
+    get:
+      operationId: listParts
+      tags: [parts]
+      summary: List inventory parts
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: barcode
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Parts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Part"
+
+    post:
+      operationId: createPart
+      tags: [parts]
+      summary: Create a new inventory part
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePartBody"
+      responses:
+        "201":
+          description: Part created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Part"
+
+  /parts/{id}:
+    patch:
+      operationId: updatePart
+      tags: [parts]
+      summary: Update an inventory part
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePartBody"
+      responses:
+        "200":
+          description: Part updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Part"
+
+    delete:
+      operationId: deletePart
+      tags: [parts]
+      summary: Delete an inventory part
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Part deleted
+
+  /technicians:
+    get:
+      operationId: listTechnicians
+      tags: [technicians]
+      summary: List all technicians
+      responses:
+        "200":
+          description: Technicians list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Technician"
+
+    post:
+      operationId: createTechnician
+      tags: [technicians]
+      summary: Create a technician
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTechnicianBody"
+      responses:
+        "201":
+          description: Technician created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Technician"
+
+  /technicians/login:
+    post:
+      operationId: technicianLogin
+      tags: [technicians]
+      summary: Technician PIN login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Technician"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get admin settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
+    patch:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update admin settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSettingsBody"
+      responses:
+        "200":
+          description: Settings updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
+  /analytics/dashboard:
+    get:
+      operationId: getAnalytics
+      tags: [settings]
+      summary: Get analytics dashboard data
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, year]
+            default: month
+      responses:
+        "200":
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analytics"
+
+  /seed:
+    post:
+      operationId: seedData
+      tags: [settings]
+      summary: Seed sample data
+      responses:
+        "200":
+          description: Data seeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +695,622 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    TicketStatus:
+      type: string
+      enum:
+        - received
+        - diagnosing
+        - repairing
+        - waiting_for_parts
+        - ready_for_pickup
+        - delivered
+
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+        serviceId:
+          type: string
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+        customerEmail:
+          type: string
+          nullable: true
+        deviceBrand:
+          type: string
+        deviceModel:
+          type: string
+        problemDescription:
+          type: string
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        technicianId:
+          type: integer
+          nullable: true
+        technicianName:
+          type: string
+          nullable: true
+        estimatedCompletion:
+          type: string
+          nullable: true
+        workSummary:
+          type: string
+          nullable: true
+        totalPartsAmount:
+          type: number
+          nullable: true
+        totalLaborAmount:
+          type: number
+          nullable: true
+        totalAmount:
+          type: number
+          nullable: true
+        billConfirmed:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - serviceId
+        - customerName
+        - customerPhone
+        - deviceBrand
+        - deviceModel
+        - problemDescription
+        - status
+        - billConfirmed
+        - createdAt
+        - updatedAt
+
+    TicketDetail:
+      allOf:
+        - $ref: "#/components/schemas/Ticket"
+        - type: object
+          properties:
+            parts:
+              type: array
+              items:
+                $ref: "#/components/schemas/TicketPart"
+            laborEntries:
+              type: array
+              items:
+                $ref: "#/components/schemas/LaborEntry"
+            auditLog:
+              type: array
+              items:
+                $ref: "#/components/schemas/AuditEntry"
+          required:
+            - parts
+            - laborEntries
+            - auditLog
+
+    TicketPart:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticketId:
+          type: integer
+        partId:
+          type: integer
+          nullable: true
+        partName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        totalPrice:
+          type: number
+        warrantyPeriod:
+          type: string
+          nullable: true
+        addedByName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - ticketId
+        - partName
+        - quantity
+        - unitPrice
+        - totalPrice
+        - createdAt
+
+    LaborEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticketId:
+          type: integer
+        technicianId:
+          type: integer
+          nullable: true
+        technicianName:
+          type: string
+          nullable: true
+        startTime:
+          type: string
+          nullable: true
+        endTime:
+          type: string
+          nullable: true
+        manualHours:
+          type: number
+          nullable: true
+        totalHours:
+          type: number
+          nullable: true
+        laborCost:
+          type: number
+          nullable: true
+        isRunning:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - ticketId
+        - isRunning
+        - createdAt
+
+    AuditEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticketId:
+          type: integer
+        action:
+          type: string
+        description:
+          type: string
+        technicianId:
+          type: integer
+          nullable: true
+        technicianName:
+          type: string
+          nullable: true
+        metadata:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - ticketId
+        - action
+        - description
+        - createdAt
+
+    PublicStatus:
+      type: object
+      properties:
+        serviceId:
+          type: string
+        customerName:
+          type: string
+        deviceBrand:
+          type: string
+        deviceModel:
+          type: string
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        statusLabel:
+          type: string
+        estimatedCompletion:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - serviceId
+        - customerName
+        - deviceBrand
+        - deviceModel
+        - status
+        - statusLabel
+        - createdAt
+        - updatedAt
+
+    Part:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        barcode:
+          type: string
+          nullable: true
+        defaultPrice:
+          type: number
+        stockQuantity:
+          type: integer
+        category:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - defaultPrice
+        - stockQuantity
+        - createdAt
+
+    Technician:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        pin:
+          type: string
+        role:
+          type: string
+          enum: [technician, manager]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - pin
+        - role
+        - isActive
+        - createdAt
+
+    Settings:
+      type: object
+      properties:
+        id:
+          type: integer
+        hourlyRate:
+          type: number
+        vatRate:
+          type: number
+        twilioAccountSid:
+          type: string
+          nullable: true
+        twilioAuthToken:
+          type: string
+          nullable: true
+        twilioFromNumber:
+          type: string
+          nullable: true
+        emailHost:
+          type: string
+          nullable: true
+        emailPort:
+          type: integer
+          nullable: true
+        emailUser:
+          type: string
+          nullable: true
+        emailPass:
+          type: string
+          nullable: true
+        emailFrom:
+          type: string
+          nullable: true
+        printerIp:
+          type: string
+          nullable: true
+        printerPort:
+          type: integer
+          nullable: true
+        smsTemplate:
+          type: string
+          nullable: true
+        emailTemplate:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+      required:
+        - id
+        - hourlyRate
+        - vatRate
+        - updatedAt
+
+    Analytics:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+        totalTickets:
+          type: integer
+        completedTickets:
+          type: integer
+        averageRepairTime:
+          type: number
+        revenueByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              revenue:
+                type: number
+            required:
+              - date
+              - revenue
+        topFailureTypes:
+          type: array
+          items:
+            type: object
+            properties:
+              deviceBrand:
+                type: string
+              deviceModel:
+                type: string
+              count:
+                type: integer
+            required:
+              - deviceBrand
+              - deviceModel
+              - count
+        technicianStats:
+          type: array
+          items:
+            type: object
+            properties:
+              technicianName:
+                type: string
+              jobsCompleted:
+                type: integer
+              avgHoursPerJob:
+                type: number
+            required:
+              - technicianName
+              - jobsCompleted
+              - avgHoursPerJob
+      required:
+        - totalRevenue
+        - totalTickets
+        - completedTickets
+        - averageRepairTime
+        - revenueByDay
+        - topFailureTypes
+        - technicianStats
+
+    CreateTicketBody:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+        customerEmail:
+          type: string
+          nullable: true
+        deviceBrand:
+          type: string
+        deviceModel:
+          type: string
+        problemDescription:
+          type: string
+        technicianId:
+          type: integer
+          nullable: true
+        estimatedCompletion:
+          type: string
+          nullable: true
+      required:
+        - customerName
+        - customerPhone
+        - deviceBrand
+        - deviceModel
+        - problemDescription
+
+    UpdateTicketBody:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+        customerEmail:
+          type: string
+          nullable: true
+        deviceBrand:
+          type: string
+        deviceModel:
+          type: string
+        problemDescription:
+          type: string
+        technicianId:
+          type: integer
+          nullable: true
+        estimatedCompletion:
+          type: string
+          nullable: true
+
+    UpdateStatusBody:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        technicianId:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        billConfirmed:
+          type: boolean
+          nullable: true
+      required:
+        - status
+
+    AddPartBody:
+      type: object
+      properties:
+        partId:
+          type: integer
+          nullable: true
+        partName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        warrantyPeriod:
+          type: string
+          nullable: true
+        technicianId:
+          type: integer
+          nullable: true
+      required:
+        - partName
+        - quantity
+        - unitPrice
+
+    AddLaborBody:
+      type: object
+      properties:
+        technicianId:
+          type: integer
+          nullable: true
+        mode:
+          type: string
+          enum: [timer, manual]
+        manualHours:
+          type: number
+          nullable: true
+        hourlyRate:
+          type: number
+          nullable: true
+      required:
+        - mode
+
+    WorkSummaryBody:
+      type: object
+      properties:
+        workSummary:
+          type: string
+        technicianId:
+          type: integer
+          nullable: true
+      required:
+        - workSummary
+
+    AddNoteBody:
+      type: object
+      properties:
+        note:
+          type: string
+        technicianId:
+          type: integer
+          nullable: true
+      required:
+        - note
+
+    CreatePartBody:
+      type: object
+      properties:
+        name:
+          type: string
+        barcode:
+          type: string
+          nullable: true
+        defaultPrice:
+          type: number
+        stockQuantity:
+          type: integer
+        category:
+          type: string
+          nullable: true
+      required:
+        - name
+        - defaultPrice
+        - stockQuantity
+
+    CreateTechnicianBody:
+      type: object
+      properties:
+        name:
+          type: string
+        pin:
+          type: string
+        role:
+          type: string
+          enum: [technician, manager]
+      required:
+        - name
+        - pin
+        - role
+
+    LoginBody:
+      type: object
+      properties:
+        pin:
+          type: string
+      required:
+        - pin
+
+    UpdateSettingsBody:
+      type: object
+      properties:
+        hourlyRate:
+          type: number
+        vatRate:
+          type: number
+        twilioAccountSid:
+          type: string
+          nullable: true
+        twilioAuthToken:
+          type: string
+          nullable: true
+        twilioFromNumber:
+          type: string
+          nullable: true
+        emailHost:
+          type: string
+          nullable: true
+        emailPort:
+          type: integer
+          nullable: true
+        emailUser:
+          type: string
+          nullable: true
+        emailPass:
+          type: string
+          nullable: true
+        emailFrom:
+          type: string
+          nullable: true
+        printerIp:
+          type: string
+          nullable: true
+        printerPort:
+          type: integer
+          nullable: true
+        smsTemplate:
+          type: string
+          nullable: true
+        emailTemplate:
+          type: string
+          nullable: true

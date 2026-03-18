@@ -91,6 +91,35 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `artifacts/mobile` (`@workspace/mobile`)
+
+Expo React Native mobile app for the Service Management System.
+
+- **Target device**: MEFERI ME61 handheld terminal (Android)
+- **Framework**: Expo SDK 54 + Expo Router v6 (file-based routing)
+- **Auth**: PIN-based 4-digit login, persisted via AsyncStorage
+- **API**: Connects to `@workspace/api-server` via `EXPO_PUBLIC_DOMAIN` env var (falls back to `/api`)
+- **State**: React Query for server state, AuthContext for auth
+- **Primary color**: `#FF6B35` (orange brand)
+
+**Key screens:**
+- `app/login.tsx` — PIN login with haptic feedback
+- `app/(tabs)/index.tsx` — Tickets list with status filter chips, search, FAB
+- `app/(tabs)/scan.tsx` — Barcode / Service ID lookup (ME61 scanner-compatible)
+- `app/(tabs)/analytics.tsx` — Dashboard with stats, revenue chart, technician rankings
+- `app/(tabs)/settings.tsx` — Billing, printer (TSC MB241T), Twilio SMS, SMTP email config
+- `app/ticket/[id].tsx` — Full ticket detail: parts, labor timer, work summary, status workflow, audit log
+- `app/ticket/new.tsx` — New ticket form with brand/problem chip selectors
+- `app/technicians.tsx` — Manage technicians
+- `app/parts.tsx` — Parts inventory management
+- `app/status/[serviceId].tsx` — Public status page for customers
+
+**Workflows running:**
+- `artifacts/mobile: expo` — Expo dev server
+- `artifacts/api-server: API Server` — Express API on port 8080
+
+**Default test PINs:** 1234 (Manager/Alice), 2345 (Bob Tech), 3456 (Carol Tech)
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
