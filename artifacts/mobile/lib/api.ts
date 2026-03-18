@@ -64,6 +64,7 @@ export const api = {
     list: () => apiFetch("/technicians"),
     login: (pin: string) => apiFetch("/technicians/login", { method: "POST", body: JSON.stringify({ pin }) }),
     create: (data: Record<string, unknown>) => apiFetch("/technicians", { method: "POST", body: JSON.stringify(data) }),
+    deactivate: (id: number) => apiFetch(`/technicians/${id}`, { method: "DELETE" }),
   },
   settings: {
     get: () => apiFetch("/settings"),

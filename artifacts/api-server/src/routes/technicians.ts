@@ -26,6 +26,34 @@ router.post("/technicians", async (req, res): Promise<void> => {
   res.status(201).json({ ...tech, createdAt: tech.createdAt.toISOString() });
 });
 
+// DELETE /technicians/:id  (soft delete — sets isActive = false)
+router.delete("/technicians/:id", async (req, res): Promise<void> => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
+
+  const [tech] = await db.select().from(techniciansTable).where(eq(techniciansTable.id, id));
+  if (!tech) { res.status(404).json({ error: "Technician not found" }); return; }
+
+  // Prevent deactivating the last manager
+  if (tech.role === "manager") {
+    const managers = await db.select().from(techniciansTable)
+      .where(eq(techniciansTable.isActive, true));
+    const activeManagers = managers.filter(t => t.role === "manager");
+    if (activeManagers.length <= 1) {
+      res.status(400).json({ error: "Cannot deactivate the last manager" });
+      return;
+    }
+  }
+
+  const [updated] = await db
+    .update(techniciansTable)
+    .set({ isActive: false })
+    .where(eq(techniciansTable.id, id))
+    .returning();
+
+  res.json({ ...updated, createdAt: updated.createdAt.toISOString() });
+});
+
 // POST /technicians/login
 router.post("/technicians/login", async (req, res): Promise<void> => {
   const { pin } = req.body;

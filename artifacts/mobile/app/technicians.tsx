@@ -18,6 +18,7 @@ import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
 import Colors from "@/constants/colors";
 import { api } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 type Technician = {
   id: number;
@@ -30,6 +31,7 @@ type Technician = {
 export default function TechniciansScreen() {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const { technician: me } = useAuth();
   const bottomPadding = Platform.OS === "web" ? 34 : insets.bottom;
   const topPadding = Platform.OS === "web" ? 67 : insets.top;
 
@@ -43,6 +45,33 @@ export default function TechniciansScreen() {
     queryKey: ["technicians"],
     queryFn: () => api.technicians.list(),
   });
+
+  const handleDeactivate = (tech: Technician) => {
+    if (tech.id === me?.id) {
+      Alert.alert("Αδύνατο", "Δεν μπορείτε να απενεργοποιήσετε τον εαυτό σας.");
+      return;
+    }
+    Alert.alert(
+      "Απενεργοποίηση Τεχνικού",
+      `Ο/Η "${tech.name}" θα απενεργοποιηθεί και δεν θα μπορεί να συνδεθεί. Το ιστορικό tickets διατηρείται. Συνέχεια;`,
+      [
+        { text: "Άκυρο", style: "cancel" },
+        {
+          text: "Απενεργοποίηση",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.technicians.deactivate(tech.id);
+              await queryClient.invalidateQueries({ queryKey: ["technicians"] });
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            } catch (e: unknown) {
+              Alert.alert("Σφάλμα", e instanceof Error ? e.message : "Αποτυχία απενεργοποίησης");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleCreate = async () => {
     if (!name.trim()) { Alert.alert("Required", "Name is required"); return; }
@@ -84,7 +113,7 @@ export default function TechniciansScreen() {
         >
           {(technicians as Technician[]).map(tech => (
             <View key={tech.id} style={styles.techCard}>
-              <View style={styles.techAvatar}>
+              <View style={[styles.techAvatar, !tech.isActive && { backgroundColor: Colors.light.border }]}>
                 <Text style={styles.techAvatarText}>{tech.name.charAt(0)}</Text>
               </View>
               <View style={styles.techInfo}>
@@ -96,6 +125,15 @@ export default function TechniciansScreen() {
                   {tech.isActive ? "Active" : "Inactive"}
                 </Text>
               </View>
+              {tech.isActive && tech.id !== me?.id && (
+                <TouchableOpacity
+                  style={styles.deactivateBtn}
+                  onPress={() => handleDeactivate(tech)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="person-remove-outline" size={18} color="#EF4444" />
+                </TouchableOpacity>
+              )}
             </View>
           ))}
           {(technicians as Technician[]).length === 0 && (
@@ -174,6 +212,7 @@ const styles = StyleSheet.create({
   statusBadgeText: { fontSize: 12, fontFamily: "Inter_600SemiBold", color: "#22C55E" },
   statusBadgeInactive: { backgroundColor: "#F1F5F9" },
   statusBadgeTextInactive: { color: Colors.light.textSecondary },
+  deactivateBtn: { padding: 6, marginLeft: 4 },
   empty: { alignItems: "center", paddingTop: 60, gap: 12 },
   emptyText: { fontSize: 16, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary },
   modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
