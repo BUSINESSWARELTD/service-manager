@@ -8,136 +8,136 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root {
-    --yellow: #FFD700;
-    --yellow-dark: #E6C200;
-    --yellow-light: #FFFBE6;
-    --bg: #1A1A2E;
-    --surface: #16213E;
-    --card: #FFFFFF;
-    --text-dark: #0F172A;
-    --text-muted: #64748B;
-    --brand-orange: #FF6B35;
+    --orange: #FF6B35;
+    --orange-light: #FFF4F0;
+    --orange-mid: #FFE0D6;
+    --text: #1A1A1A;
+    --text-muted: #555555;
+    --text-light: #888888;
+    --border: #E5E5E5;
+    --bg: #FFFFFF;
+    --bg-page: #F7F7F7;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Inter', Arial, sans-serif;
-    background: var(--bg);
-    color: #E2E8F0;
-    font-size: 15px;
+    background: var(--bg-page);
+    color: var(--text);
+    font-size: 14px;
     line-height: 1.7;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  /* ── Cover Page ── */
+  /* ── PAGE WRAPPER ── */
+  .page {
+    background: var(--bg);
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER PAGE
+  ══════════════════════════════════════════ */
   .cover {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+    width: 100%;
+    min-height: 1123px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 60px 40px;
+    padding: 80px 60px 60px;
+    background: #FFFFFF;
+    border-bottom: 6px solid var(--orange);
     page-break-after: always;
-    position: relative;
-    overflow: hidden;
   }
 
-  .cover::before {
-    content: '';
-    position: absolute;
-    top: -150px; left: -150px;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(255,215,0,0.12) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .cover::after {
-    content: '';
-    position: absolute;
-    bottom: -100px; right: -100px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(255,107,53,0.10) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .cover-logo-wrapper {
-    margin-bottom: 40px;
-    position: relative; z-index: 1;
-  }
-
-  .cover-logo-badge {
-    display: inline-flex;
+  .cover-brand-row {
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 14px;
-    background: rgba(255,215,0,0.12);
-    border: 2px solid var(--yellow);
-    border-radius: 20px;
-    padding: 16px 32px;
+    margin-bottom: 60px;
   }
 
-  .cover-logo-icon {
-    width: 56px; height: 56px;
-    background: var(--yellow);
+  .cover-brand-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--orange);
     border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
   }
 
-  .cover-logo-text {
+  .cover-brand-text {
     text-align: left;
   }
 
-  .cover-logo-brand {
-    font-size: 22px;
+  .cover-brand-name {
+    font-size: 18px;
     font-weight: 800;
-    color: var(--yellow);
-    letter-spacing: 2px;
+    color: var(--orange);
+    letter-spacing: 0.5px;
   }
 
-  .cover-logo-sub {
+  .cover-brand-sub {
     font-size: 12px;
-    color: rgba(255,215,0,0.7);
-    letter-spacing: 1px;
+    color: var(--text-light);
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+  }
+
+  .cover-app-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
   }
 
   .cover-title {
-    font-size: 52px;
+    font-size: 54px;
     font-weight: 800;
-    color: var(--yellow);
+    color: var(--text);
     line-height: 1.1;
-    margin-bottom: 16px;
-    position: relative; z-index: 1;
+    margin-bottom: 18px;
   }
 
   .cover-subtitle {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 400;
-    color: rgba(255,255,255,0.8);
+    color: var(--text-muted);
     margin-bottom: 12px;
-    position: relative; z-index: 1;
   }
 
-  .cover-desc {
-    font-size: 16px;
-    color: rgba(255,255,255,0.55);
-    max-width: 540px;
+  .cover-tagline {
+    font-size: 15px;
+    color: var(--text-light);
+    max-width: 480px;
     margin: 0 auto 48px;
-    position: relative; z-index: 1;
   }
 
   .cover-divider {
-    width: 80px; height: 4px;
-    background: var(--yellow);
+    width: 60px;
+    height: 4px;
+    background: var(--orange);
     border-radius: 2px;
     margin: 0 auto 48px;
-    position: relative; z-index: 1;
   }
 
   .cover-meta {
-    display: flex; gap: 40px;
-    position: relative; z-index: 1;
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .cover-meta-item {
@@ -146,154 +146,287 @@
 
   .cover-meta-label {
     font-size: 11px;
-    color: rgba(255,215,0,0.6);
+    font-weight: 600;
+    color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: 1.5px;
+    margin-bottom: 4px;
   }
 
   .cover-meta-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    margin-top: 4px;
-  }
-
-  /* ── Main Container ── */
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 32px;
-  }
-
-  /* ── Section Headers ── */
-  .section-header {
-    margin: 48px 0 28px;
-  }
-
-  .section-number {
-    display: inline-block;
-    background: var(--yellow);
-    color: #0F172A;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
-
-  .section-title {
-    font-size: 30px;
-    font-weight: 800;
-    color: var(--yellow);
-    padding-bottom: 12px;
-    border-bottom: 3px solid var(--yellow);
-    display: inline-block;
-  }
-
-  .section-subtitle {
     font-size: 15px;
-    color: rgba(255,255,255,0.55);
-    margin-top: 8px;
-  }
-
-  /* ── Cards ── */
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    border-left: 5px solid var(--yellow);
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
-  }
-
-  .card-title {
-    font-size: 17px;
     font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  /* ══════════════════════════════════════════
+     MAIN CONTENT
+  ══════════════════════════════════════════ */
+  .content {
+    padding: 56px 64px 48px;
+  }
+
+  /* ── TOC ── */
+  .toc-section {
+    margin-bottom: 48px;
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+
+  .toc-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--orange);
+    margin-bottom: 24px;
+  }
+
+  .toc-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
   }
 
-  .card-title .icon {
-    width: 32px; height: 32px;
-    background: var(--yellow-light);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+  .toc-item:last-child { border-bottom: none; }
+
+  .toc-num {
+    width: 30px;
+    height: 30px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
     flex-shrink: 0;
   }
 
-  .card p {
-    color: var(--text-muted);
+  .toc-label {
+    flex: 1;
     font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted #CCCCCC;
+    height: 1px;
+    margin: 0 12px;
+  }
+
+  .toc-page {
+    font-size: 13px;
+    color: var(--orange);
+    font-weight: 700;
+    min-width: 40px;
+    text-align: right;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 0;
+    page-break-before: always;
+  }
+
+  .section:first-child { page-break-before: auto; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-num {
+    width: 46px;
+    height: 46px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .section-header-text { flex: 1; }
+
+  .section-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 5px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* ── PARAGRAPH ── */
+  .para {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 20px;
+    orphans: 2;
+    widows: 2;
+  }
+
+  .para strong { color: var(--text); }
+
+  /* ── CARD (info block) ── */
+  .card {
+    background: var(--orange-light);
+    border-left: 5px solid var(--orange);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    page-break-inside: avoid;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: var(--text-muted);
     line-height: 1.7;
     margin-bottom: 6px;
   }
 
   .card p:last-child { margin-bottom: 0; }
 
-  /* ── Step Cards ── */
-  .steps { display: flex; flex-direction: column; gap: 16px; }
-
-  .step {
-    background: var(--card);
-    border-radius: 14px;
-    border-left: 5px solid var(--yellow);
-    padding: 20px 24px;
+  /* ── STEPS ── */
+  .steps {
     display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 22px;
   }
 
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    page-break-inside: avoid;
+  }
+
+  .step:last-child { border-bottom: none; }
+
   .step-num {
-    width: 44px; height: 44px;
-    background: var(--yellow);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
+    width: 34px;
+    height: 34px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
     font-weight: 800;
-    color: #0F172A;
+    color: #fff;
     flex-shrink: 0;
+    margin-top: 1px;
   }
 
   .step-body { flex: 1; }
 
   .step-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 6px;
+    color: var(--text);
+    margin-bottom: 4px;
   }
 
   .step-desc {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-muted);
     line-height: 1.65;
   }
 
-  /* ── Status Grid ── */
-  .status-grid {
+  .step-desc strong { color: var(--text); }
+
+  /* ── GRID 2 COLUMNS ── */
+  .grid2 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 14px;
-    margin: 20px 0;
+    margin-bottom: 22px;
+    page-break-inside: avoid;
   }
 
-  .status-card {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 18px 20px;
-    border-left: 5px solid var(--yellow);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  .grid-item {
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--orange);
+    border-radius: 8px;
+    padding: 18px;
+    page-break-inside: avoid;
+  }
+
+  .grid-item-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+
+  .grid-item-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .grid-item-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── STATUS GRID ── */
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+    page-break-inside: avoid;
+  }
+
+  .status-item {
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px 18px;
+    page-break-inside: avoid;
   }
 
   .status-badge {
     display: inline-block;
-    padding: 4px 14px;
+    padding: 3px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 700;
@@ -301,274 +434,209 @@
     margin-bottom: 8px;
   }
 
-  .status-card p {
+  .status-item p {
     font-size: 13px;
     color: var(--text-muted);
     line-height: 1.55;
   }
 
-  /* ── Info Grid ── */
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    margin: 20px 0;
+  /* ── TABLE ── */
+  .table-wrap {
+    margin-bottom: 22px;
+    page-break-inside: avoid;
   }
 
-  .info-card {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 20px;
-    border-left: 5px solid var(--yellow);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-
-  .info-card .label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--yellow-dark);
-    margin-bottom: 6px;
-  }
-
-  .info-card .value {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-dark);
-  }
-
-  .info-card .desc {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    line-height: 1.5;
-  }
-
-  /* ── Tip/Warning/Note Boxes ── */
-  .tip-box {
-    background: rgba(255,215,0,0.08);
-    border: 1.5px solid rgba(255,215,0,0.35);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin: 20px 0;
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-
-  .tip-icon {
-    font-size: 20px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .tip-body { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.65; }
-  .tip-body strong { color: var(--yellow); }
-
-  .warn-box {
-    background: rgba(239,68,68,0.08);
-    border: 1.5px solid rgba(239,68,68,0.3);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin: 20px 0;
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-
-  .warn-body { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.65; }
-  .warn-body strong { color: #F87171; }
-
-  /* ── Table ── */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
-    background: var(--card);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    font-size: 13px;
   }
 
-  thead { background: var(--yellow); }
+  thead tr {
+    background: var(--orange);
+  }
+
   thead th {
-    padding: 14px 18px;
-    font-size: 13px;
+    padding: 11px 16px;
+    font-size: 12px;
     font-weight: 700;
-    color: #0F172A;
+    color: #fff;
     text-align: left;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.5px;
   }
 
-  tbody tr { border-bottom: 1px solid #E2E8F0; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
+
   tbody tr:last-child { border-bottom: none; }
-  tbody tr:nth-child(even) { background: #F8FAFC; }
-  tbody td {
-    padding: 13px 18px;
-    font-size: 14px;
-    color: var(--text-dark);
-    vertical-align: top;
+
+  tbody tr:nth-child(even) {
+    background: #F9F9F9;
   }
 
-  /* ── Flow Diagram ── */
+  tbody td {
+    padding: 11px 16px;
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+
+  /* ── FLOW DIAGRAM ── */
   .flow {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0;
-    margin: 24px 0;
+    margin-bottom: 22px;
+    page-break-inside: avoid;
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 16px;
   }
 
   .flow-step {
-    background: var(--card);
-    border: 2px solid var(--yellow);
-    border-radius: 12px;
-    padding: 12px 20px;
+    background: #fff;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 8px 14px;
     text-align: center;
-    min-width: 110px;
   }
 
   .flow-step .flow-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--text-dark);
+    color: var(--text);
+    white-space: nowrap;
   }
 
   .flow-arrow {
-    font-size: 22px;
-    color: var(--yellow);
-    padding: 0 4px;
-  }
-
-  /* ── Footer Banner ── */
-  .footer-banner {
-    background: linear-gradient(135deg, #0F172A, #1E293B);
-    border-top: 4px solid var(--yellow);
-    padding: 40px 32px;
-    text-align: center;
-    margin-top: 60px;
-  }
-
-  .footer-logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .footer-logo-icon {
-    width: 40px; height: 40px;
-    background: var(--yellow);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-
-  .footer-brand {
     font-size: 18px;
-    font-weight: 800;
-    color: var(--yellow);
-    letter-spacing: 2px;
-  }
-
-  .footer-text {
-    font-size: 13px;
-    color: rgba(255,255,255,0.45);
-  }
-
-  /* ── Page Breaks ── */
-  .page-break { page-break-before: always; }
-
-  /* ── TOC ── */
-  .toc {
-    background: var(--surface);
-    border-radius: 20px;
-    border: 1.5px solid rgba(255,215,0,0.2);
-    padding: 32px;
-    margin: 32px 0;
-  }
-
-  .toc-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--yellow);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255,215,0,0.3);
-  }
-
-  .toc-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    gap: 14px;
-  }
-
-  .toc-item:last-child { border-bottom: none; }
-
-  .toc-num {
-    width: 28px; height: 28px;
-    background: var(--yellow);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    font-weight: 800;
-    color: #0F172A;
-    flex-shrink: 0;
-  }
-
-  .toc-label {
-    flex: 1;
-    font-size: 15px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
-  }
-
-  .toc-dots {
-    flex: 1;
-    border-bottom: 1px dotted rgba(255,215,0,0.3);
-    height: 1px;
-    margin: 0 10px;
-  }
-
-  .toc-page {
-    font-size: 14px;
-    color: var(--yellow);
+    color: var(--orange);
+    padding: 0 6px;
     font-weight: 700;
   }
 
-  /* Print */
+  /* ── TIP / WARN BOX ── */
+  .tip-box {
+    background: var(--orange-light);
+    border: 1.5px solid var(--orange-mid);
+    border-left: 5px solid var(--orange);
+    border-radius: 8px;
+    padding: 15px 18px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    page-break-inside: avoid;
+  }
+
+  .tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .tip-body { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+  .tip-body strong { color: var(--text); }
+
+  .warn-box {
+    background: #FFF8F0;
+    border: 1.5px solid #FFD4B8;
+    border-left: 5px solid #F97316;
+    border-radius: 8px;
+    padding: 15px 18px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    page-break-inside: avoid;
+  }
+
+  .warn-body { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+  .warn-body strong { color: var(--text); }
+
+  /* ── CODE ── */
+  code {
+    background: #F0F0F0;
+    color: var(--orange);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--orange);
+    color: #fff;
+    text-align: center;
+    padding: 32px 40px;
+    margin-top: 48px;
+    page-break-inside: avoid;
+  }
+
+  .footer-name {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .footer-sub {
+    font-size: 12px;
+    opacity: 0.85;
+  }
+
+  /* ══════════════════════════════════════════
+     PRINT STYLES
+  ══════════════════════════════════════════ */
   @media print {
-    body { background: white; color: #0F172A; }
-    .cover { background: #0F172A; }
+    body { background: #fff; }
+    .page { max-width: 100%; box-shadow: none; }
+    .cover { min-height: auto; }
+
+    .section { page-break-before: always; }
+    .toc-section { page-break-after: always; }
+
+    .step { page-break-inside: avoid; }
+    .card { page-break-inside: avoid; }
+    .grid2 { page-break-inside: avoid; }
+    .grid-item { page-break-inside: avoid; }
+    .status-grid { page-break-inside: avoid; }
+    .status-item { page-break-inside: avoid; }
+    .table-wrap { page-break-inside: avoid; }
+    table { page-break-inside: avoid; }
+    .tip-box { page-break-inside: avoid; }
+    .warn-box { page-break-inside: avoid; }
+    .flow { page-break-inside: avoid; }
+    .footer { page-break-inside: avoid; }
+
+    h1, h2, h3 { page-break-after: avoid; }
+    p { orphans: 2; widows: 2; }
+  }
+
+  @page {
+    margin: 20mm 18mm;
+    size: A4;
   }
 </style>
 </head>
 <body>
+<div class="page">
 
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- COVER PAGE -->
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════
+     COVER PAGE
+════════════════════════════════════════════════ -->
 <div class="cover">
-  <div class="cover-logo-wrapper">
-    <div class="cover-logo-badge">
-      <div class="cover-logo-icon">🔧</div>
-      <div class="cover-logo-text">
-        <div class="cover-logo-brand">BUSINESSWARE</div>
-        <div class="cover-logo-sub">Λύσεις Επιχειρηματικής Λογισμικής</div>
-      </div>
+  <div class="cover-brand-row">
+    <div class="cover-brand-icon">🔧</div>
+    <div class="cover-brand-text">
+      <div class="cover-brand-name">Λύσεις Επιχειρηματικού Λογισμικού</div>
+      <div class="cover-brand-sub">Επαγγελματικές Εφαρμογές για Επιχειρήσεις</div>
     </div>
   </div>
 
-  <h1 class="cover-title">Service Manager</h1>
-  <p class="cover-subtitle">Σύστημα Διαχείρισης Επισκευών</p>
-  <p class="cover-desc">
-    Εγχειρίδιο χρήσης για τεχνικούς και διαχειριστές.
-    Βήμα-προς-βήμα οδηγίες για το σύστημα διαχείρισης service workshop.
-  </p>
+  <div class="cover-app-label">Service Manager</div>
+  <h1 class="cover-title">Εγχειρίδιο Χρήσης</h1>
+  <p class="cover-subtitle">Σύστημα Διαχείρισης Επισκευών Workshop</p>
+  <p class="cover-tagline">Βήμα-προς-βήμα οδηγίες για τεχνικούς και διαχειριστές</p>
   <div class="cover-divider"></div>
   <div class="cover-meta">
     <div class="cover-meta-item">
@@ -590,85 +658,92 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- TOC + INTRO -->
-<!-- ════════════════════════════════════════════════════════ -->
-<div class="container">
-  <div class="toc">
-    <div class="toc-title">📋 Πίνακας Περιεχομένων</div>
-    <div class="toc-item">
-      <div class="toc-num">1</div>
-      <div class="toc-label">Εισαγωγή & Σύνδεση</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 1</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">2</div>
-      <div class="toc-label">Διαχείριση Tickets</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 2</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">3</div>
-      <div class="toc-label">Κύκλος Ζωής & Καταστάσεις</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 3</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">4</div>
-      <div class="toc-label">Ανταλλακτικά & Εργασία</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 4</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">5</div>
-      <div class="toc-label">Scanner Barcodes (ME61)</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 5</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">6</div>
-      <div class="toc-label">Εκτύπωση Ετικετών (TSC MB241T)</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 5</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">7</div>
-      <div class="toc-label">Ειδοποιήσεις SMS & Email</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 6</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">8</div>
-      <div class="toc-label">Analytics & Αναφορές</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 7</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">9</div>
-      <div class="toc-label">Ρυθμίσεις & Διαχείριση</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 8</div>
-    </div>
-    <div class="toc-item">
-      <div class="toc-num">10</div>
-      <div class="toc-label">Δημόσια Σελίδα Κατάστασης</div>
-      <div class="toc-dots"></div>
-      <div class="toc-page">σ. 9</div>
-    </div>
-  </div>
+<!-- ════════════════════════════════════════════════
+     TOC
+════════════════════════════════════════════════ -->
+<div class="content">
+<div class="toc-section">
+  <div class="toc-heading">ΠΕΡΙΕΧΟΜΕΝΑ</div>
 
-  <!-- ══ 1. Εισαγωγή ══ -->
+  <div class="toc-item">
+    <div class="toc-num">1</div>
+    <div class="toc-label">Εισαγωγή & Σύνδεση</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 2</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">2</div>
+    <div class="toc-label">Διαχείριση Tickets</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 3</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">3</div>
+    <div class="toc-label">Κύκλος Ζωής & Καταστάσεις</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 4</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">4</div>
+    <div class="toc-label">Ανταλλακτικά & Καταγραφή Εργασίας</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 5</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">5</div>
+    <div class="toc-label">Scanner Barcodes — MEFERI ME61</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 6</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">6</div>
+    <div class="toc-label">Εκτύπωση Ετικετών — TSC MB241T</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 7</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">7</div>
+    <div class="toc-label">Ειδοποιήσεις SMS & Email</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 8</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">8</div>
+    <div class="toc-label">Analytics & Αναφορές</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 9</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">9</div>
+    <div class="toc-label">Ρυθμίσεις & Διαχείριση</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 10</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">10</div>
+    <div class="toc-label">Δημόσια Σελίδα Κατάστασης</div>
+    <div class="toc-dots"></div>
+    <div class="toc-page">σ. 11</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     1. Εισαγωγή & Σύνδεση
+════════════════════════════════════════════════ -->
+<div class="section">
   <div class="section-header">
-    <div class="section-number">ΕΝΟΤΗΤΑ 01</div>
-    <h2 class="section-title">Εισαγωγή & Σύνδεση</h2>
-    <p class="section-subtitle">Πρώτα βήματα — εκκίνηση της εφαρμογής και σύνδεση τεχνικού</p>
+    <div class="section-num">1</div>
+    <div class="section-header-text">
+      <div class="section-title">Εισαγωγή & Σύνδεση</div>
+      <div class="section-subtitle">Πρώτα βήματα — εκκίνηση της εφαρμογής και σύνδεση τεχνικού</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">📱</span>Τι είναι το Service Manager</div>
-    <p>Το <strong>Service Manager</strong> είναι μια εφαρμογή διαχείρισης επισκευών, σχεδιασμένη για workshop τεχνικής υποστήριξης. Λειτουργεί σε Android (MEFERI ME61) και Web Browser.</p>
-    <p>Αναπτύχθηκε από <strong>BUSINESSWARE</strong> — εξειδικευμένη εταιρεία λογισμικού για επιχειρήσεις.</p>
+    <div class="card-title">📱 Τι είναι το Service Manager</div>
+    <p>Το <strong>Service Manager</strong> είναι μια επαγγελματική εφαρμογή διαχείρισης επισκευών, σχεδιασμένη ειδικά για χρήση στο τερματικό <strong>MEFERI ME61</strong> και σε web browser. Επιτρέπει την πλήρη παρακολούθηση της πορείας κάθε επισκευής από την παραλαβή έως την παράδοση.</p>
+    <p>Αναπτύχθηκε από <strong>Λύσεις Επιχειρηματικού Λογισμικού</strong> — εξειδικευμένη εταιρεία λογισμικού για επιχειρήσεις.</p>
   </div>
 
   <div class="steps">
@@ -676,77 +751,86 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Εκκίνηση εφαρμογής</div>
-        <div class="step-desc">Ανοίξτε την εφαρμογή Service Manager στο τερματικό MEFERI ME61 ή στο web browser. Εμφανίζεται η οθόνη σύνδεσης με το αριθμητικό πληκτρολόγιο.</div>
+        <div class="step-desc">Ανοίξτε την εφαρμογή Service Manager στο τερματικό MEFERI ME61 ή στο web browser. Εμφανίζεται η οθόνη σύνδεσης με αριθμητικό πληκτρολόγιο.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <div class="step-title">Εισαγωγή 4-ψήφιου PIN</div>
-        <div class="step-desc">Πατήστε τα 4 ψηφία του PIN σας. Η αυτόματη σύνδεση πραγματοποιείται αμέσως μόλις εισαχθεί το 4ο ψηφίο — δεν χρειάζεται πλήκτρο Enter.</div>
+        <div class="step-desc">Πατήστε τα 4 ψηφία του PIN σας. Η σύνδεση πραγματοποιείται αμέσως μόλις εισαχθεί το 4ο ψηφίο — δεν χρειάζεται πλήκτρο Enter.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
         <div class="step-title">Επαλήθευση ταυτότητας</div>
-        <div class="step-desc">Το σύστημα ελέγχει αυτόματα τον κωδικό PIN. Σε περίπτωση λάθους εμφανίζεται μήνυμα σφάλματος και οι κύκλοι γίνονται κόκκινοι. Δοκιμάστε ξανά.</div>
+        <div class="step-desc">Το σύστημα ελέγχει αυτόματα τον κωδικό PIN. Σε λάθος PIN εμφανίζεται μήνυμα σφάλματος και οι κύκλοι γίνονται κόκκινοι. Δοκιμάστε ξανά.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
         <div class="step-title">Μεταφορά στην κύρια οθόνη</div>
-        <div class="step-desc">Μετά την επιτυχή σύνδεση, εμφανίζεται η λίστα tickets με τον χαιρετισμό και το όνομά σας στη γωνία.</div>
+        <div class="step-desc">Μετά την επιτυχή σύνδεση εμφανίζεται η λίστα tickets με τον χαιρετισμό και το όνομά σας.</div>
       </div>
     </div>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Τεχνικός</th>
-        <th>Default PIN</th>
-        <th>Ρόλος</th>
-        <th>Δικαιώματα</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Alice Manager</strong></td>
-        <td><strong>1234</strong></td>
-        <td>Manager</td>
-        <td>Πλήρης πρόσβαση, ρυθμίσεις, reports</td>
-      </tr>
-      <tr>
-        <td>Bob Technician</td>
-        <td>2345</td>
-        <td>Technician</td>
-        <td>Tickets, ανταλλακτικά, χρόνος</td>
-      </tr>
-      <tr>
-        <td>Carol Technician</td>
-        <td>3456</td>
-        <td>Technician</td>
-        <td>Tickets, ανταλλακτικά, χρόνος</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Τεχνικός</th>
+          <th>Default PIN</th>
+          <th>Ρόλος</th>
+          <th>Δικαιώματα</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Alice Manager</strong></td>
+          <td><strong>1234</strong></td>
+          <td>Manager</td>
+          <td>Πλήρης πρόσβαση, ρυθμίσεις, αναφορές</td>
+        </tr>
+        <tr>
+          <td>Bob Technician</td>
+          <td>2345</td>
+          <td>Technician</td>
+          <td>Tickets, ανταλλακτικά, χρόνος</td>
+        </tr>
+        <tr>
+          <td>Carol Technician</td>
+          <td>3456</td>
+          <td>Technician</td>
+          <td>Tickets, ανταλλακτικά, χρόνος</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="tip-box">
     <span class="tip-icon">💡</span>
     <div class="tip-body"><strong>Ασφάλεια:</strong> Αλλάξτε τα default PINs πριν τεθεί σε παραγωγή. Μεταβείτε στις Ρυθμίσεις → Διαχείριση Τεχνικών για να δημιουργήσετε νέους χρήστες με προσωπικά PINs.</div>
   </div>
+</div>
 
-  <!-- ══ 2. Διαχείριση Tickets ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 02</div>
-    <h2 class="section-title">Διαχείριση Tickets</h2>
-    <p class="section-subtitle">Δημιουργία, αναζήτηση και φιλτράρισμα εντολών επισκευής</p>
+
+<!-- ════════════════════════════════════════════════
+     2. Διαχείριση Tickets
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-header-text">
+      <div class="section-title">Διαχείριση Tickets</div>
+      <div class="section-subtitle">Δημιουργία, αναζήτηση και φιλτράρισμα εντολών επισκευής</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">📋</span>Κύρια Οθόνη Tickets</div>
+    <div class="card-title">📋 Κύρια Οθόνη Tickets</div>
     <p>Η κεντρική οθόνη εμφανίζει όλα τα tickets ταξινομημένα κατά ημερομηνία ενημέρωσης. Κάθε κάρτα ticket δείχνει: Αριθμό Εντολής, Πελάτη, Συσκευή, Κατάσταση και Ανατεθείμενο Τεχνικό.</p>
   </div>
 
@@ -755,7 +839,7 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Δημιουργία νέου ticket</div>
-        <div class="step-desc">Πατήστε το πορτοκαλί κουμπί <strong>+</strong> (FAB) κάτω δεξιά. Ανοίγει η φόρμα δημιουργίας ticket.</div>
+        <div class="step-desc">Πατήστε το πορτοκαλί κουμπί <strong>+</strong> κάτω δεξιά. Ανοίγει η φόρμα δημιουργίας ticket.</div>
       </div>
     </div>
     <div class="step">
@@ -783,26 +867,33 @@
       <div class="step-num">5</div>
       <div class="step-body">
         <div class="step-title">Δημιουργία & Εκτύπωση</div>
-        <div class="step-desc">Πατήστε <strong>"Create Ticket + Print Label"</strong>. Το ticket δημιουργείται, λαμβάνει αυτόματο Service ID (π.χ. SRV-20260318-1234) και η ετικέτα εκτυπώνεται αυτόματα στον εκτυπωτή TSC MB241T.</div>
+        <div class="step-desc">Πατήστε <strong>"Create Ticket + Print Label"</strong>. Το ticket λαμβάνει αυτόματο Service ID (π.χ. SRV-20260318-1234) και η ετικέτα εκτυπώνεται στον TSC MB241T.</div>
       </div>
     </div>
   </div>
 
   <div class="tip-box">
     <span class="tip-icon">🔍</span>
-    <div class="tip-body"><strong>Αναζήτηση & Φίλτρα:</strong> Χρησιμοποιήστε τη μπάρα αναζήτησης για αναζήτηση με όνομα πελάτη ή Service ID. Τα chips φιλτραρίσματος (All, Received, Diagnosing, κ.ά.) φιλτράρουν κατά κατάσταση.</div>
+    <div class="tip-body"><strong>Αναζήτηση & Φίλτρα:</strong> Χρησιμοποιήστε τη μπάρα αναζήτησης για εύρεση με όνομα πελάτη ή Service ID. Τα chips φιλτραρίσματος (All, Received, Diagnosing, κ.ά.) φιλτράρουν κατά κατάσταση.</div>
   </div>
+</div>
 
-  <!-- ══ 3. Κύκλος Ζωής ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 03</div>
-    <h2 class="section-title">Κύκλος Ζωής & Καταστάσεις</h2>
-    <p class="section-subtitle">Οι 6 καταστάσεις επισκευής και οι επιτρεπτές μεταβάσεις</p>
+
+<!-- ════════════════════════════════════════════════
+     3. Κύκλος Ζωής
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-header-text">
+      <div class="section-title">Κύκλος Ζωής & Καταστάσεις</div>
+      <div class="section-subtitle">Οι 6 καταστάσεις επισκευής και οι επιτρεπτές μεταβάσεις</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🔄</span>Ροή Εργασίας</div>
-    <p>Κάθε ticket ακολουθεί συγκεκριμένο κύκλο ζωής. Ορισμένες μεταβάσεις απαιτούν προαπαιτούμενα (π.χ. απαιτείται Work Summary πριν το "Ready for Pickup").</p>
+    <div class="card-title">🔄 Ροή Εργασίας</div>
+    <p>Κάθε ticket ακολουθεί συγκεκριμένο κύκλο ζωής. Ορισμένες μεταβάσεις απαιτούν προαπαιτούμενα (π.χ. υποχρεωτική συμπλήρωση Work Summary πριν το "Ready for Pickup").</p>
   </div>
 
   <div class="flow">
@@ -820,72 +911,85 @@
   </div>
 
   <div class="status-grid">
-    <div class="status-card">
+    <div class="status-item">
       <div class="status-badge" style="background:#6366F1;">📥 Received</div>
       <p><strong>Αρχική κατάσταση.</strong> Η συσκευή παραλήφθηκε. Δεν έχει ξεκινήσει διάγνωση.</p>
     </div>
-    <div class="status-card">
+    <div class="status-item">
       <div class="status-badge" style="background:#F59E0B;">🔬 Diagnosing</div>
       <p><strong>Διάγνωση βλάβης.</strong> Ο τεχνικός εξετάζει τη συσκευή για να εντοπίσει το πρόβλημα.</p>
     </div>
-    <div class="status-card">
+    <div class="status-item">
       <div class="status-badge" style="background:#3B82F6;">🔧 Repairing</div>
       <p><strong>Σε επισκευή.</strong> Η επισκευή βρίσκεται σε εξέλιξη. Ο χρονόμετρος εργασίας τρέχει.</p>
     </div>
-    <div class="status-card">
+    <div class="status-item">
       <div class="status-badge" style="background:#F97316;">⏳ Waiting for Parts</div>
-      <p><strong>Αναμονή ανταλλακτικών.</strong> Η επισκευή σταμάτησε προσωρινά λόγω έλλειψης ανταλλακτικού.</p>
+      <p><strong>Αναμονή ανταλλακτικών.</strong> Η επισκευή σταμάτησε λόγω έλλειψης ανταλλακτικού.</p>
     </div>
-    <div class="status-card">
+    <div class="status-item">
       <div class="status-badge" style="background:#22C55E;">✅ Ready for Pickup</div>
       <p><strong>Έτοιμο παραλαβή.</strong> Αποστέλλεται αυτόματο SMS & Email στον πελάτη.</p>
     </div>
-    <div class="status-card">
+    <div class="status-item">
       <div class="status-badge" style="background:#64748B;">📦 Delivered</div>
-      <p><strong>Παραδόθηκε.</strong> Η συσκευή παραδόθηκε στον πελάτη. Ο λογαριασμός επιβεβαιώθηκε.</p>
+      <p><strong>Παραδόθηκε.</strong> Η συσκευή παραδόθηκε. Ο λογαριασμός επιβεβαιώθηκε.</p>
     </div>
   </div>
 
-  <table>
-    <thead>
-      <tr><th>Μετάβαση</th><th>Προαπαιτούμενο</th><th>Αυτόματη Ενέργεια</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Repairing → Ready for Pickup</td>
-        <td>⚠️ Υποχρεωτική συμπλήρωση Work Summary</td>
-        <td>Αποστολή SMS + Email στον πελάτη</td>
-      </tr>
-      <tr>
-        <td>Ready → Delivered</td>
-        <td>✅ Επιβεβαίωση λογαριασμού (Bill Confirmed)</td>
-        <td>Κλείσιμο ticket, καταχώρηση στα analytics</td>
-      </tr>
-      <tr>
-        <td>Οποιαδήποτε προς τα πίσω</td>
-        <td>Αιτιολόγηση (Reason)</td>
-        <td>Καταχώρηση στο Audit Log</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Μετάβαση</th>
+          <th>Προαπαιτούμενο</th>
+          <th>Αυτόματη Ενέργεια</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Repairing → Ready for Pickup</td>
+          <td>⚠️ Υποχρεωτική συμπλήρωση Work Summary</td>
+          <td>Αποστολή SMS + Email στον πελάτη</td>
+        </tr>
+        <tr>
+          <td>Ready → Delivered</td>
+          <td>✅ Επιβεβαίωση λογαριασμού (Bill Confirmed)</td>
+          <td>Κλείσιμο ticket, καταχώρηση στα analytics</td>
+        </tr>
+        <tr>
+          <td>Οποιαδήποτε προς τα πίσω</td>
+          <td>Αιτιολόγηση (Reason)</td>
+          <td>Καταχώρηση στο Audit Log</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-  <!-- ══ 4. Ανταλλακτικά & Εργασία ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 04</div>
-    <h2 class="section-title">Ανταλλακτικά & Καταγραφή Εργασίας</h2>
-    <p class="section-subtitle">Διαχείριση parts, χρονόμετρο εργασίας και υπολογισμός κόστους</p>
+
+<!-- ════════════════════════════════════════════════
+     4. Ανταλλακτικά & Εργασία
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-header-text">
+      <div class="section-title">Ανταλλακτικά & Καταγραφή Εργασίας</div>
+      <div class="section-subtitle">Διαχείριση parts, χρονόμετρο εργασίας και υπολογισμός κόστους</div>
+    </div>
   </div>
 
-  <div class="info-grid">
-    <div class="info-card">
-      <div class="label">Ανταλλακτικά</div>
-      <div class="value">Parts Used</div>
-      <div class="desc">Προσθέστε ανταλλακτικά στο ticket με όνομα, ποσότητα, τιμή μονάδας και εγγύηση. Το σύστημα υπολογίζει αυτόματα το σύνολο.</div>
+  <div class="grid2">
+    <div class="grid-item">
+      <div class="grid-item-label">Ανταλλακτικά</div>
+      <div class="grid-item-title">Parts Used</div>
+      <div class="grid-item-desc">Προσθέστε ανταλλακτικά στο ticket με όνομα, ποσότητα, τιμή μονάδας και εγγύηση. Το σύστημα υπολογίζει αυτόματα το σύνολο.</div>
     </div>
-    <div class="info-card">
-      <div class="label">Χρονόμετρο</div>
-      <div class="value">Labor Timer</div>
-      <div class="desc">Ξεκινήστε/σταματήστε χρονόμετρο ή καταχωρήστε χειροκίνητα ώρες εργασίας. Η χρέωση υπολογίζεται με βάση το ωρομίσθιο από τις Ρυθμίσεις.</div>
+    <div class="grid-item">
+      <div class="grid-item-label">Χρονόμετρο</div>
+      <div class="grid-item-title">Labor Timer</div>
+      <div class="grid-item-desc">Ξεκινήστε/σταματήστε χρονόμετρο ή καταχωρήστε χειροκίνητα ώρες εργασίας. Η χρέωση υπολογίζεται από το ωρομίσθιο στις Ρυθμίσεις.</div>
     </div>
   </div>
 
@@ -908,7 +1012,7 @@
       <div class="step-num">3</div>
       <div class="step-body">
         <div class="step-title">Διακοπή χρονομέτρου</div>
-        <div class="step-desc">Πατήστε <strong>"Stop"</strong> στο κόκκινο κουμπί. Το σύστημα υπολογίζει αυτόματα τις ώρες και το κόστος εργασίας.</div>
+        <div class="step-desc">Πατήστε <strong>"Stop"</strong>. Το σύστημα υπολογίζει αυτόματα τις ώρες και το κόστος εργασίας.</div>
       </div>
     </div>
     <div class="step">
@@ -936,14 +1040,21 @@
 
   <div class="tip-box">
     <span class="tip-icon">📊</span>
-    <div class="tip-body"><strong>Bill Summary:</strong> Το τελικό ποσό υπολογίζεται αυτόματα ως (Ανταλλακτικά + Εργασία) × (1 + ΦΠΑ%). Το ωρομίσθιο και ο ΦΠΑ ορίζονται στις Ρυθμίσεις → Billing.</div>
+    <div class="tip-body"><strong>Bill Summary:</strong> Το τελικό ποσό υπολογίζεται ως (Ανταλλακτικά + Εργασία) × (1 + ΦΠΑ%). Το ωρομίσθιο και ο ΦΠΑ ορίζονται στις Ρυθμίσεις → Billing.</div>
   </div>
+</div>
 
-  <!-- ══ 5. Scanner ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 05</div>
-    <h2 class="section-title">Scanner Barcodes — MEFERI ME61</h2>
-    <p class="section-subtitle">Γρήγορη αναζήτηση ticket με barcode ή Service ID</p>
+
+<!-- ════════════════════════════════════════════════
+     5. Scanner Barcodes
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-header-text">
+      <div class="section-title">Scanner Barcodes — MEFERI ME61</div>
+      <div class="section-subtitle">Γρήγορη αναζήτηση ticket με barcode ή Service ID</div>
+    </div>
   </div>
 
   <div class="steps">
@@ -951,39 +1062,46 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Μεταβείτε στην καρτέλα "Scan"</div>
-        <div class="step-desc">Πατήστε το εικονίδιο barcode στη μπάρα πλοήγησης (κάτω). Η εφαρμογή εστιάζει αυτόματα στο πεδίο εισαγωγής.</div>
+        <div class="step-desc">Πατήστε το εικονίδιο barcode στη μπάρα πλοήγησης κάτω. Η εφαρμογή εστιάζει αυτόματα στο πεδίο εισαγωγής.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <div class="step-title">Σκανάρισμα barcode (ME61)</div>
-        <div class="step-desc">Πατήστε το trigger του ME61 και σκανάρετε την ετικέτα του ticket. Το Service ID εισάγεται αυτόματα και ανοίγει το ticket αμέσως.</div>
+        <div class="step-desc">Πατήστε το trigger του ME61 και σκανάρετε την ετικέτα του ticket. Το Service ID εισάγεται αυτόματα και το ticket ανοίγει αμέσως.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
         <div class="step-title">Χειροκίνητη αναζήτηση</div>
-        <div class="step-desc">Πληκτρολογήστε το Service ID (π.χ. <strong>SRV-20260318-1234</strong>) και πατήστε το πλήκτρο αναζήτησης ή Enter.</div>
+        <div class="step-desc">Πληκτρολογήστε το Service ID (π.χ. <strong>SRV-20260318-1234</strong>) και πατήστε Enter ή το πλήκτρο αναζήτησης.</div>
       </div>
     </div>
   </div>
 
   <div class="warn-box">
     <span class="tip-icon">⚠️</span>
-    <div class="warn-body"><strong>Σημείωση ME61:</strong> Το πεδίο εισαγωγής παραμένει πάντα εστιασμένο για να δέχεται αυτόματα την είσοδο από το scanner. Μην το αλλάξετε χειροκίνητα κατά τη διάρκεια scanning.</div>
+    <div class="warn-body"><strong>Σημείωση ME61:</strong> Το πεδίο εισαγωγής παραμένει πάντα εστιασμένο για να δέχεται αυτόματα την είσοδο από το scanner. Μην το αλλάξετε χειροκίνητα κατά τη διάρκεια σκαναρίσματος.</div>
   </div>
+</div>
 
-  <!-- ══ 6. Εκτύπωση ══ -->
+
+<!-- ════════════════════════════════════════════════
+     6. Εκτύπωση Ετικετών
+════════════════════════════════════════════════ -->
+<div class="section">
   <div class="section-header">
-    <div class="section-number">ΕΝΟΤΗΤΑ 06</div>
-    <h2 class="section-title">Εκτύπωση Ετικετών — TSC MB241T</h2>
-    <p class="section-subtitle">Αυτόματη εκτύπωση TSPL ετικετών μέσω TCP/IP</p>
+    <div class="section-num">6</div>
+    <div class="section-header-text">
+      <div class="section-title">Εκτύπωση Ετικετών — TSC MB241T</div>
+      <div class="section-subtitle">Αυτόματη εκτύπωση TSPL ετικετών μέσω TCP/IP</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🖨️</span>Αυτόματη Εκτύπωση</div>
+    <div class="card-title">🖨️ Αυτόματη Εκτύπωση</div>
     <p>Κάθε νέο ticket εκτυπώνει αυτόματα ετικέτα στον εκτυπωτή TSC MB241T αμέσως μετά τη δημιουργία. Δεν απαιτείται χειροκίνητη ενέργεια.</p>
     <p>Η ετικέτα περιέχει: <strong>Service ID + Barcode</strong>, Όνομα Πελάτη, Συσκευή, Ημερομηνία Παραλαβής, Περιγραφή Βλάβης.</p>
   </div>
@@ -993,47 +1111,54 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Ρύθμιση εκτυπωτή (μόνο μία φορά)</div>
-        <div class="step-desc">Μεταβείτε στις <strong>Ρυθμίσεις → Label Printer</strong>. Εισάγετε την IP διεύθυνση του TSC MB241T (π.χ. 192.168.1.100) και την πόρτα (default: 9100).</div>
+        <div class="step-desc">Ρυθμίσεις → <strong>Label Printer</strong>. Εισάγετε την IP διεύθυνση του TSC MB241T (π.χ. 192.168.1.100) και την πόρτα (default: 9100).</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <div class="step-title">Επαλήθευση σύνδεσης</div>
-        <div class="step-desc">Ο εκτυπωτής πρέπει να είναι συνδεδεμένος στο ίδιο LAN δίκτυο με τον server. Ελέγξτε ότι η IP είναι προσβάσιμη (ping).</div>
+        <div class="step-title">Επαλήθευση δικτύου</div>
+        <div class="step-desc">Ο εκτυπωτής πρέπει να είναι συνδεδεμένος στο ίδιο LAN δίκτυο με τον server. Ελέγξτε ότι η IP είναι προσβάσιμη (ping 192.168.1.100).</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
         <div class="step-title">Δημιουργία ticket → αυτόματη εκτύπωση</div>
-        <div class="step-desc">Κάθε νέο ticket εκτυπώνει ετικέτα αυτόματα. Τυχόν σφάλματα εκτύπωσης καταγράφονται στον server log (το ticket δημιουργείται κανονικά).</div>
+        <div class="step-desc">Κάθε νέο ticket εκτυπώνει ετικέτα αυτόματα. Τυχόν σφάλματα εκτύπωσης καταγράφονται στον server log — το ticket δημιουργείται κανονικά ανεξάρτητα.</div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ══ 7. Ειδοποιήσεις ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 07</div>
-    <h2 class="section-title">Ειδοποιήσεις SMS & Email</h2>
-    <p class="section-subtitle">Αυτόματη ενημέρωση πελατών με Twilio SMS και SMTP Email</p>
+
+<!-- ════════════════════════════════════════════════
+     7. Ειδοποιήσεις SMS & Email
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-header-text">
+      <div class="section-title">Ειδοποιήσεις SMS & Email</div>
+      <div class="section-subtitle">Αυτόματη ενημέρωση πελατών με Twilio SMS και SMTP Email</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">📩</span>Αυτόματες Ειδοποιήσεις</div>
+    <div class="card-title">📩 Αυτόματες Ειδοποιήσεις</div>
     <p>Όταν ένα ticket μεταβεί σε κατάσταση <strong>"Ready for Pickup"</strong>, αποστέλλεται αυτόματα SMS στο κινητό τηλέφωνο του πελάτη και Email (εφόσον έχει καταχωρηθεί).</p>
   </div>
 
-  <div class="info-grid">
-    <div class="info-card">
-      <div class="label">SMS Ειδοποίηση</div>
-      <div class="value">Twilio API</div>
-      <div class="desc">Αποστέλλεται αυτόματα στο τηλέφωνο πελάτη. Περιέχει Service ID και μήνυμα παραλαβής.</div>
+  <div class="grid2">
+    <div class="grid-item">
+      <div class="grid-item-label">SMS Ειδοποίηση</div>
+      <div class="grid-item-title">Twilio API</div>
+      <div class="grid-item-desc">Αποστέλλεται αυτόματα στο τηλέφωνο πελάτη. Περιέχει Service ID και μήνυμα ότι η συσκευή είναι έτοιμη για παραλαβή.</div>
     </div>
-    <div class="info-card">
-      <div class="label">Email Ειδοποίηση</div>
-      <div class="value">SMTP</div>
-      <div class="desc">Αποστέλλεται αν υπάρχει email. Περιέχει συνδ. δημόσιας σελίδας κατάστασης.</div>
+    <div class="grid-item">
+      <div class="grid-item-label">Email Ειδοποίηση</div>
+      <div class="grid-item-title">SMTP</div>
+      <div class="grid-item-desc">Αποστέλλεται αν υπάρχει email. Περιέχει σύνδεσμο στη δημόσια σελίδα κατάστασης της επισκευής.</div>
     </div>
   </div>
 
@@ -1042,62 +1167,69 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Ρύθμιση Twilio SMS</div>
-        <div class="step-desc">Ρυθμίσεις → SMS Notifications (Twilio). Εισάγετε: Account SID, Auth Token, From Number (π.χ. +1234567890). Αποκτήστε credentials από <strong>twilio.com</strong>.</div>
+        <div class="step-desc">Ρυθμίσεις → <strong>SMS Notifications (Twilio)</strong>. Εισάγετε: Account SID, Auth Token, From Number (π.χ. +1234567890). Credentials από <strong>twilio.com</strong>.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <div class="step-title">Ρύθμιση SMTP Email</div>
-        <div class="step-desc">Ρυθμίσεις → Email Notifications. Εισάγετε: SMTP Host (π.χ. smtp.gmail.com), Port (587), Username, Password, From Email.</div>
+        <div class="step-desc">Ρυθμίσεις → <strong>Email Notifications</strong>. Εισάγετε: SMTP Host (π.χ. smtp.gmail.com), Port (587), Username, Password, From Email.</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
         <div class="step-title">Αυτόματη αποστολή</div>
-        <div class="step-desc">Όταν αλλάζει η κατάσταση σε <strong>"Ready for Pickup"</strong>, το σύστημα στέλνει αυτόματα SMS & Email. Δεν χρειάζεται χειροκίνητη ενέργεια.</div>
+        <div class="step-desc">Όταν αλλάζει η κατάσταση σε <strong>"Ready for Pickup"</strong>, το σύστημα στέλνει SMS & Email αυτόματα. Δεν χρειάζεται χειροκίνητη ενέργεια.</div>
       </div>
     </div>
   </div>
 
   <div class="tip-box">
     <span class="tip-icon">📱</span>
-    <div class="tip-body"><strong>Gmail App Password:</strong> Αν χρησιμοποιείτε Gmail, ενεργοποιήστε 2FA και δημιουργήστε App Password από <em>myaccount.google.com → Security → App Passwords</em>. Χρησιμοποιήστε αυτό ως password SMTP.</div>
+    <div class="tip-body"><strong>Gmail App Password:</strong> Αν χρησιμοποιείτε Gmail, ενεργοποιήστε 2FA και δημιουργήστε App Password από <em>myaccount.google.com → Security → App Passwords</em>. Χρησιμοποιήστε το ως password SMTP.</div>
   </div>
+</div>
 
-  <!-- ══ 8. Analytics ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 08</div>
-    <h2 class="section-title">Analytics & Αναφορές</h2>
-    <p class="section-subtitle">Στατιστικά workshop, έσοδα, απόδοση τεχνικών</p>
+
+<!-- ════════════════════════════════════════════════
+     8. Analytics
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-header-text">
+      <div class="section-title">Analytics & Αναφορές</div>
+      <div class="section-subtitle">Στατιστικά workshop, έσοδα, απόδοση τεχνικών</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">📊</span>Dashboard Analytics</div>
+    <div class="card-title">📊 Dashboard Analytics</div>
     <p>Η καρτέλα <strong>Analytics</strong> παρέχει real-time επισκόπηση της απόδοσης του workshop για τις τελευταίες 7 ημέρες, 30 ημέρες ή 12 μήνες.</p>
   </div>
 
-  <div class="info-grid">
-    <div class="info-card">
-      <div class="label">Συνολικά Έσοδα</div>
-      <div class="value">Total Revenue €</div>
-      <div class="desc">Άθροισμα όλων των ολοκληρωμένων και παραδομένων εντολών για την επιλεγμένη περίοδο.</div>
+  <div class="grid2">
+    <div class="grid-item">
+      <div class="grid-item-label">Συνολικά Έσοδα</div>
+      <div class="grid-item-title">Total Revenue €</div>
+      <div class="grid-item-desc">Άθροισμα όλων των ολοκληρωμένων και παραδομένων εντολών για την επιλεγμένη περίοδο.</div>
     </div>
-    <div class="info-card">
-      <div class="label">Συνολικές Εντολές</div>
-      <div class="value">Total Jobs</div>
-      <div class="desc">Πλήθος tickets που δημιουργήθηκαν στην επιλεγμένη περίοδο.</div>
+    <div class="grid-item">
+      <div class="grid-item-label">Συνολικές Εντολές</div>
+      <div class="grid-item-title">Total Jobs</div>
+      <div class="grid-item-desc">Πλήθος tickets που δημιουργήθηκαν στην επιλεγμένη χρονική περίοδο.</div>
     </div>
-    <div class="info-card">
-      <div class="label">Ολοκληρωμένες</div>
-      <div class="value">Completed</div>
-      <div class="desc">Tickets σε κατάσταση "Delivered" — επιτυχώς παραδομένες επισκευές.</div>
+    <div class="grid-item">
+      <div class="grid-item-label">Ολοκληρωμένες</div>
+      <div class="grid-item-title">Completed</div>
+      <div class="grid-item-desc">Tickets σε κατάσταση "Delivered" — επιτυχώς παραδομένες επισκευές.</div>
     </div>
-    <div class="info-card">
-      <div class="label">Μέσος Χρόνος</div>
-      <div class="value">Avg Repair Time</div>
-      <div class="desc">Μέσος χρόνος επισκευής σε ώρες από παραλαβή έως παράδοση.</div>
+    <div class="grid-item">
+      <div class="grid-item-label">Μέσος Χρόνος</div>
+      <div class="grid-item-title">Avg Repair Time</div>
+      <div class="grid-item-desc">Μέσος χρόνος επισκευής σε ώρες από παραλαβή έως παράδοση.</div>
     </div>
   </div>
 
@@ -1131,65 +1263,78 @@
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ══ 9. Ρυθμίσεις ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 09</div>
-    <h2 class="section-title">Ρυθμίσεις & Διαχείριση</h2>
-    <p class="section-subtitle">Billing, εκτυπωτής, ειδοποιήσεις, τεχνικοί, αποθέματα</p>
+
+<!-- ════════════════════════════════════════════════
+     9. Ρυθμίσεις
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-header-text">
+      <div class="section-title">Ρυθμίσεις & Διαχείριση</div>
+      <div class="section-subtitle">Billing, εκτυπωτής, ειδοποιήσεις, τεχνικοί, αποθέματα</div>
+    </div>
   </div>
 
-  <table>
-    <thead>
-      <tr><th>Κατηγορία</th><th>Πεδία</th><th>Περιγραφή</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>💰 Billing</strong></td>
-        <td>Ωρομίσθιο (€), ΦΠΑ (%)</td>
-        <td>Ορίζει τη χρέωση ανά ώρα και τον συντελεστή ΦΠΑ για τους λογαριασμούς</td>
-      </tr>
-      <tr>
-        <td><strong>🖨️ Printer</strong></td>
-        <td>IP Address, Port</td>
-        <td>Σύνδεση με TSC MB241T μέσω TCP/IP. Default port: 9100</td>
-      </tr>
-      <tr>
-        <td><strong>📱 SMS (Twilio)</strong></td>
-        <td>Account SID, Auth Token, From Number</td>
-        <td>Credentials Twilio για αυτόματη αποστολή SMS στους πελάτες</td>
-      </tr>
-      <tr>
-        <td><strong>📧 Email (SMTP)</strong></td>
-        <td>Host, Port, User, Password, From</td>
-        <td>SMTP ρυθμίσεις για αποστολή email (Gmail, Outlook, custom SMTP)</td>
-      </tr>
-      <tr>
-        <td><strong>👥 Technicians</strong></td>
-        <td>Όνομα, PIN, Ρόλος</td>
-        <td>Δημιουργία/διαχείριση τεχνικών με 4-ψήφιο PIN και ρόλο (technician/manager)</td>
-      </tr>
-      <tr>
-        <td><strong>📦 Parts Inventory</strong></td>
-        <td>Κωδικός, Τιμή, Στοκ, Barcode</td>
-        <td>Αποθήκη ανταλλακτικών με τιμές αγοράς/πώλησης και barcode</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Κατηγορία</th>
+          <th>Πεδία</th>
+          <th>Περιγραφή</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>💰 Billing</strong></td>
+          <td>Ωρομίσθιο (€), ΦΠΑ (%)</td>
+          <td>Ορίζει τη χρέωση ανά ώρα και τον συντελεστή ΦΠΑ για τους λογαριασμούς</td>
+        </tr>
+        <tr>
+          <td><strong>🖨️ Printer</strong></td>
+          <td>IP Address, Port</td>
+          <td>Σύνδεση με TSC MB241T μέσω TCP/IP. Default port: 9100</td>
+        </tr>
+        <tr>
+          <td><strong>📱 SMS (Twilio)</strong></td>
+          <td>Account SID, Auth Token, From Number</td>
+          <td>Credentials Twilio για αυτόματη αποστολή SMS στους πελάτες</td>
+        </tr>
+        <tr>
+          <td><strong>📧 Email (SMTP)</strong></td>
+          <td>Host, Port, User, Password, From</td>
+          <td>SMTP ρυθμίσεις για αποστολή email (Gmail, Outlook, custom SMTP)</td>
+        </tr>
+        <tr>
+          <td><strong>👥 Technicians</strong></td>
+          <td>Όνομα, PIN, Ρόλος</td>
+          <td>Δημιουργία/διαχείριση τεχνικών με 4-ψήφιο PIN και ρόλο</td>
+        </tr>
+        <tr>
+          <td><strong>📦 Parts Inventory</strong></td>
+          <td>Κωδικός, Τιμή, Στοκ, Barcode</td>
+          <td>Αποθήκη ανταλλακτικών με τιμές αγοράς/πώλησης και barcode</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Προσθήκη νέου τεχνικού</div>
-        <div class="step-desc">Ρυθμίσεις → Manage Technicians → κουμπί <strong>+</strong>. Εισάγετε Όνομα, 4-ψήφιο PIN, Ρόλο (Technician / Manager). Πατήστε "Create Technician".</div>
+        <div class="step-desc">Ρυθμίσεις → <strong>Manage Technicians</strong> → κουμπί <strong>+</strong>. Εισάγετε Όνομα, 4-ψήφιο PIN, Ρόλο (Technician / Manager). Πατήστε "Create Technician".</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <div class="step-title">Αποθήκη Ανταλλακτικών</div>
-        <div class="step-desc">Ρυθμίσεις → Manage Parts Inventory → κουμπί <strong>+</strong>. Εισάγετε: Όνομα, Κωδικό, Τιμή Αγοράς, Τιμή Πώλησης, Στοκ, Barcode, Κατηγορία.</div>
+        <div class="step-desc">Ρυθμίσεις → <strong>Manage Parts Inventory</strong> → κουμπί <strong>+</strong>. Εισάγετε: Όνομα, Κωδικό, Τιμή Αγοράς, Τιμή Πώλησης, Στοκ, Barcode, Κατηγορία.</div>
       </div>
     </div>
     <div class="step">
@@ -1200,18 +1345,25 @@
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ══ 10. Δημόσια Σελίδα ══ -->
-  <div class="section-header page-break">
-    <div class="section-number">ΕΝΟΤΗΤΑ 10</div>
-    <h2 class="section-title">Δημόσια Σελίδα Κατάστασης</h2>
-    <p class="section-subtitle">Ο πελάτης ελέγχει μόνος του την κατάσταση της επισκευής του</p>
+
+<!-- ════════════════════════════════════════════════
+     10. Δημόσια Σελίδα Κατάστασης
+════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div class="section-header-text">
+      <div class="section-title">Δημόσια Σελίδα Κατάστασης</div>
+      <div class="section-subtitle">Ο πελάτης ελέγχει μόνος του την κατάσταση της επισκευής του</div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🌐</span>Public Status Page</div>
-    <p>Κάθε ticket έχει μια μοναδική δημόσια URL που επιτρέπει στον πελάτη να δει την κατάσταση της επισκευής του χωρίς να χρειάζεται σύνδεση.</p>
-    <p><strong>URL format:</strong> <code style="background:#1E293B;color:#FFD700;padding:3px 8px;border-radius:6px;font-size:13px;">https://yourapp.com/status/SRV-20260318-1234</code></p>
+    <div class="card-title">🌐 Public Status Page</div>
+    <p>Κάθε ticket έχει μια μοναδική δημόσια URL που επιτρέπει στον πελάτη να δει την κατάσταση χωρίς να χρειάζεται σύνδεση στο σύστημα.</p>
+    <p><strong>URL format:</strong> <code>https://yourapp.com/status/SRV-20260318-1234</code></p>
   </div>
 
   <div class="steps">
@@ -1219,7 +1371,7 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Αποστολή link στον πελάτη</div>
-        <div class="step-desc">Το email ειδοποίησης "Ready for Pickup" περιλαμβάνει αυτόματα τον σύνδεσμο της δημόσιας σελίδας. Μπορείτε επίσης να στείλετε τη URL μέσω SMS ή Viber.</div>
+        <div class="step-desc">Το email ειδοποίησης "Ready for Pickup" περιλαμβάνει αυτόματα τον σύνδεσμο. Μπορείτε επίσης να τον στείλετε χειροκίνητα μέσω SMS ή Viber.</div>
       </div>
     </div>
     <div class="step">
@@ -1236,16 +1388,14 @@
     <div class="tip-body"><strong>Προστασία δεδομένων:</strong> Η δημόσια σελίδα εμφανίζει μόνο ελάχιστα στοιχεία (χωρίς τηλέφωνο, email ή οικονομικά στοιχεία). Μόνο ο κάτοχος του Service ID μπορεί να δει την κατάσταση.</div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer-banner">
-    <div class="footer-logo">
-      <div class="footer-logo-icon">🔧</div>
-      <div class="footer-brand">BUSINESSWARE</div>
-    </div>
-    <p style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:6px;">Service Manager v1.0 — Εγχειρίδιο Χρήσης</p>
-    <p class="footer-text">© 2026 BUSINESSWARE — Λύσεις Επιχειρηματικής Λογισμικής · Έκδοση 1.0 · Μάρτιος 2026</p>
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-name">Λύσεις Επιχειρηματικού Λογισμικού</div>
+    <div class="footer-sub">Service Manager v1.0 · Εγχειρίδιο Χρήσης · Έκδοση 1.0 · Μάρτιος 2026</div>
   </div>
 </div>
 
+</div><!-- /content -->
+</div><!-- /page -->
 </body>
 </html>
