@@ -116,15 +116,28 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleDownloadManual = async () => {
+  const handleDownloadManual = () => {
     const domain = process.env.EXPO_PUBLIC_DOMAIN;
     const url = domain
       ? `https://${domain}/api/download/manual`
       : "/api/download/manual";
-    try {
-      await Linking.openURL(url);
-    } catch {
-      Alert.alert("Σφάλμα", "Δεν ήταν δυνατό το άνοιγμα του εγχειριδίου.");
+
+    if (Platform.OS === "web") {
+      try {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch {
+        Alert.alert("Σφάλμα", "Δεν ήταν δυνατό το άνοιγμα του εγχειριδίου.");
+      }
+    } else {
+      Linking.openURL(url).catch(() =>
+        Alert.alert("Σφάλμα", "Δεν ήταν δυνατό το άνοιγμα του εγχειριδίου.")
+      );
     }
   };
 
