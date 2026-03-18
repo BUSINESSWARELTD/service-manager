@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "Dp0d69TBsGSLCjcZ1HjBU"
+uri = "file://ServiceManager_Εγχειρίδιο_Χρήσης.pdf"
+type = "pdf"
+title = "Service Manager — Εγχειρίδιο Χρήσης (BUSINESSWARE)"
