@@ -1,0 +1,26 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "EXPO_PUBLIC_DOMAIN": "REPLACE_WITH_YOUR_DEPLOYED_DOMAIN"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_DOMAIN": "REPLACE_WITH_YOUR_DEPLOYED_DOMAIN"
+      }
+    }
+  }
+}
