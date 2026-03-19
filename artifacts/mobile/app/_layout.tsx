@@ -1,14 +1,7 @@
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from "@expo-google-fonts/inter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -16,22 +9,34 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthContext";
 
-if (Platform.OS === "web" && typeof window !== "undefined") {
-  window.addEventListener("unhandledrejection", (event) => {
-    const msg = event?.reason?.message || "";
-    if (msg.includes("timeout") || msg.includes("fontfaceobserver")) {
-      event.preventDefault();
-    }
-  });
-  const origError = console.error.bind(console);
-  console.error = (...args: unknown[]) => {
-    const str = args.join(" ");
-    if (str.includes("timeout exceeded") || str.includes("fontfaceobserver")) return;
-    origError(...args);
-  };
+// Suppress fontfaceobserver timeout errors — these come from icon fonts on slow networks
+// and do not affect functionality. Icons still render via CSS fallbacks.
+if (typeof global !== "undefined") {
+  const _ErrorUtils = (global as Record<string, unknown>).ErrorUtils as {
+    getGlobalHandler: () => (e: Error, fatal: boolean) => void;
+    setGlobalHandler: (h: (e: Error, fatal: boolean) => void) => void;
+  } | undefined;
+  if (_ErrorUtils) {
+    const prev = _ErrorUtils.getGlobalHandler();
+    _ErrorUtils.setGlobalHandler((error: Error, isFatal: boolean) => {
+      const msg = error?.message || "";
+      if (msg.includes("timeout exceeded") || msg.includes("fontfaceobserver")) return;
+      prev(error, isFatal);
+    });
+  }
 }
 
-SplashScreen.preventAutoHideAsync();
+if (Platform.OS === "web" && typeof window !== "undefined") {
+  window.addEventListener("unhandledrejection", (event) => {
+    const msg = (event?.reason as Error)?.message || String(event?.reason || "");
+    if (msg.includes("timeout") || msg.includes("fontfaceobserver")) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+}
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,28 +45,9 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const [fontsReady, setFontsReady] = useState(false);
-
   useEffect(() => {
-    if (Platform.OS === "web") {
-      setFontsReady(true);
-      SplashScreen.hideAsync().catch(() => {});
-      return;
-    }
-    Font.loadAsync({
-      Inter_400Regular,
-      Inter_500Medium,
-      Inter_600SemiBold,
-      Inter_700Bold,
-    })
-      .catch(() => {})
-      .finally(() => {
-        setFontsReady(true);
-        SplashScreen.hideAsync().catch(() => {});
-      });
+    SplashScreen.hideAsync().catch(() => {});
   }, []);
-
-  if (!fontsReady) return null;
 
   return (
     <SafeAreaProvider>

@@ -16,10 +16,14 @@ export default function Root({ children }: PropsWithChildren) {
         />
         <style dangerouslySetInnerHTML={{
           __html: `
-            @font-face { font-family: 'Inter_400Regular'; src: local('Inter'), local('Inter-Regular'); font-weight: 400; }
-            @font-face { font-family: 'Inter_500Medium'; src: local('Inter'), local('Inter-Medium'); font-weight: 500; }
-            @font-face { font-family: 'Inter_600SemiBold'; src: local('Inter'), local('Inter-SemiBold'); font-weight: 600; }
-            @font-face { font-family: 'Inter_700Bold'; src: local('Inter'), local('Inter-Bold'); font-weight: 700; }
+            /* Map Expo font family names to system fonts so fontfaceobserver resolves instantly */
+            @font-face { font-family: 'Inter_400Regular'; src: local('Inter'), local('Helvetica Neue'), local('Arial'); font-weight: 400; }
+            @font-face { font-family: 'Inter_500Medium'; src: local('Inter'), local('Helvetica Neue'), local('Arial'); font-weight: 500; }
+            @font-face { font-family: 'Inter_600SemiBold'; src: local('Inter'), local('Helvetica Neue'), local('Arial'); font-weight: 600; }
+            @font-face { font-family: 'Inter_700Bold'; src: local('Inter'), local('Helvetica Neue'), local('Arial'); font-weight: 700; }
+            /* Preload icon fonts to prevent fontfaceobserver timeout */
+            @font-face { font-family: 'Ionicons'; src: url('https://cdn.jsdelivr.net/npm/ionicons@7/dist/fonts/ionicons.woff2') format('woff2'); font-display: swap; }
+            @font-face { font-family: 'MaterialCommunityIcons'; src: url('https://cdn.jsdelivr.net/npm/@mdi/font@7/fonts/materialdesignicons-webfont.woff2') format('woff2'); font-display: swap; }
           `
         }} />
         <ScrollViewStyleReset />
