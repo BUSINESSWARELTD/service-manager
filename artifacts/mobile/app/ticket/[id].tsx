@@ -271,7 +271,7 @@ export default function TicketDetailScreen() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <MaterialCommunityIcons name="qrcode" size={18} color={Colors.brand.primary} />
-                <Text style={styles.cardTitle}>QR Κατάστασης Πελάτη</Text>
+                <Text style={styles.cardTitle}>QR για Πελάτη</Text>
               </View>
               <View style={styles.qrContainer}>
                 <QRCode
@@ -281,14 +281,14 @@ export default function TicketDetailScreen() {
                   backgroundColor="#ffffff"
                 />
                 <View style={styles.qrInfo}>
-                  <Text style={styles.qrLabel}>Ο πελάτης σκανάρει για να δει την κατάσταση</Text>
-                  <Text style={styles.qrUrl} numberOfLines={2}>{statusUrl}</Text>
+                  <Text style={styles.qrHeading}>Δείξτε στον πελάτη</Text>
+                  <Text style={styles.qrLabel}>Σκανάρει και παρακολουθεί online πότε είναι έτοιμη η επισκευή του — χωρίς να χρειαστεί να τηλεφωνήσει.</Text>
                   <TouchableOpacity
                     style={styles.qrOpenBtn}
                     onPress={() => Linking.openURL(statusUrl).catch(() => {})}
                   >
                     <Ionicons name="open-outline" size={14} color={Colors.brand.primary} />
-                    <Text style={styles.qrOpenBtnText}>Άνοιγμα</Text>
+                    <Text style={styles.qrOpenBtnText}>Άνοιγμα σελίδας</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -834,7 +834,8 @@ const styles = StyleSheet.create({
   currentTag: { fontSize: 12, fontFamily: "Inter_600SemiBold", color: "rgba(255,255,255,0.8)", backgroundColor: "rgba(255,255,255,0.2)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   qrContainer: { flexDirection: "row", alignItems: "center", gap: 16, padding: 16, paddingTop: 4 },
   qrInfo: { flex: 1, gap: 6 },
-  qrLabel: { fontSize: 13, fontFamily: "Inter_500Medium", color: Colors.light.text, lineHeight: 18 },
+  qrHeading: { fontSize: 14, fontFamily: "Inter_700Bold", color: Colors.light.text },
+  qrLabel: { fontSize: 12, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary, lineHeight: 18 },
   qrUrl: { fontSize: 11, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary, lineHeight: 16 },
   qrOpenBtn: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
   qrOpenBtnText: { fontSize: 13, fontFamily: "Inter_500Medium", color: Colors.brand.primary },
