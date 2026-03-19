@@ -11,7 +11,7 @@ import {
 } from "@workspace/db";
 import { generateServiceId, STATUS_LABELS } from "../lib/serviceId.js";
 import { sendSmsNotification, sendEmailNotification, interpolateTemplate } from "../lib/notifications.js";
-import { generateTSPLLabel, printLabel } from "../lib/printer.js";
+import { generateTSPLLabel, generateCustomerVoucherLabel, printLabel } from "../lib/printer.js";
 
 const router: IRouter = Router();
 
@@ -142,11 +142,26 @@ router.post("/tickets", async (req, res): Promise<void> => {
   const techName = await getTechName(technicianId);
   await logAudit(ticket.id, "created", `Ticket created by ${techName || "system"}. Device: ${deviceBrand} ${deviceModel}`, technicianId);
 
-  // Auto-print label
+  // Auto-print labels: device label first, then customer voucher
   const now = new Date();
-  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
-  const tspl = generateTSPLLabel({ serviceId, customerName, deviceBrand, deviceModel, problemDescription, date: dateStr });
-  printLabel(tspl).catch(err => console.error("Print error:", err));
+  const dateStr = `${now.getDate().toString().padStart(2,"0")}/${(now.getMonth()+1).toString().padStart(2,"0")}/${now.getFullYear()}`;
+  const [cfg] = await db.select().from(settingsTable).limit(1);
+
+  const deviceLabel = generateTSPLLabel({ serviceId, customerName, deviceBrand, deviceModel, problemDescription, date: dateStr });
+  const voucherLabel = generateCustomerVoucherLabel({
+    serviceId,
+    customerName,
+    deviceBrand,
+    deviceModel,
+    date: dateStr,
+    shopName:  cfg?.shopName  ?? "Υπηρεσία Επισκευής",
+    shopPhone: cfg?.shopPhone ?? "",
+  });
+
+  // Print device label, then customer voucher (sequential so they come out in order)
+  printLabel(deviceLabel)
+    .then(() => printLabel(voucherLabel))
+    .catch(err => console.error("Print error:", err));
 
   const [full] = await db.select({ ...ticketsTable }).from(ticketsTable).where(eq(ticketsTable.id, ticket.id));
   res.status(201).json({ ...full, createdAt: full.createdAt.toISOString(), updatedAt: full.updatedAt.toISOString() });

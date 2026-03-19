@@ -23,6 +23,7 @@ router.patch("/settings", async (req, res): Promise<void> => {
   const updates: Partial<typeof settingsTable.$inferInsert> = {};
   const fields = ["hourlyRate", "vatRate", "twilioAccountSid", "twilioAuthToken", "twilioFromNumber",
     "emailHost", "emailPort", "emailUser", "emailPass", "emailFrom",
+    "shopName", "shopPhone",
     "printerIp", "printerPort", "smsTemplate", "emailTemplate",
     "deviceBrands", "commonIssues"];
   

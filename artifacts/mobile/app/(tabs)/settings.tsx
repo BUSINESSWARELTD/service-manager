@@ -106,6 +106,8 @@ export default function SettingsScreen() {
   const [emailUser, setEmailUser] = useState("");
   const [emailPass, setEmailPass] = useState("");
   const [emailFrom, setEmailFrom] = useState("");
+  const [shopName, setShopName] = useState("Υπηρεσία Επισκευής");
+  const [shopPhone, setShopPhone] = useState("");
   const [printerIp, setPrinterIp] = useState("");
   const [printerPort, setPrinterPort] = useState("9100");
   const [brands, setBrands] = useState<string[]>(DEFAULT_BRANDS);
@@ -124,6 +126,8 @@ export default function SettingsScreen() {
       setEmailUser(String(s.emailUser || ""));
       setEmailPass(String(s.emailPass || ""));
       setEmailFrom(String(s.emailFrom || ""));
+      setShopName(String(s.shopName || "Υπηρεσία Επισκευής"));
+      setShopPhone(String(s.shopPhone || ""));
       setPrinterIp(String(s.printerIp || ""));
       setPrinterPort(String(s.printerPort || 9100));
       setBrands(parseJsonArray(s.deviceBrands as string, DEFAULT_BRANDS));
@@ -145,6 +149,8 @@ export default function SettingsScreen() {
         emailUser: emailUser || null,
         emailPass: emailPass || null,
         emailFrom: emailFrom || null,
+        shopName: shopName || "Υπηρεσία Επισκευής",
+        shopPhone: shopPhone || null,
         printerIp: printerIp || null,
         printerPort: parseInt(printerPort) || 9100,
         deviceBrands: JSON.stringify(brands),
@@ -242,6 +248,23 @@ export default function SettingsScreen() {
           <SettingRow label="Hourly Rate (€)" value={hourlyRate} onChangeText={setHourlyRate} placeholder="30" keyboardType="decimal-pad" />
           <View style={styles.divider} />
           <SettingRow label="VAT Rate (%)" value={vatRate} onChangeText={setVatRate} placeholder="24" keyboardType="decimal-pad" />
+        </View>
+      </View>
+
+      {/* Shop Info — printed on customer voucher labels */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialCommunityIcons name="store" size={20} color={Colors.brand.primary} />
+          <Text style={styles.sectionTitle}>Στοιχεία Καταστήματος</Text>
+        </View>
+        <View style={styles.infoBox}>
+          <MaterialCommunityIcons name="information-outline" size={15} color="#6366f1" />
+          <Text style={styles.infoBoxText}>Εμφανίζονται στη βουλίδα πελάτη που εκτυπώνεται αυτόματα κατά τη δημιουργία ticket.</Text>
+        </View>
+        <View style={styles.sectionCard}>
+          <SettingRow label="Όνομα καταστήματος" value={shopName} onChangeText={setShopName} placeholder="Λύσεις Επιχ. Λογισμικού" />
+          <View style={styles.divider} />
+          <SettingRow label="Τηλέφωνο καταστήματος" value={shopPhone} onChangeText={setShopPhone} placeholder="210 0000000" keyboardType="phone-pad" />
         </View>
       </View>
 
@@ -379,4 +402,6 @@ const styles = StyleSheet.create({
   tagInput: { flex: 1, height: 42, backgroundColor: Colors.light.inputBackground, borderRadius: 10, paddingHorizontal: 12, fontSize: 14, fontFamily: "Inter_400Regular", color: Colors.light.text, borderWidth: 1, borderColor: Colors.light.border },
   tagAddBtn: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: Colors.brand.primary, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10 },
   tagAddBtnText: { fontSize: 13, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  infoBox: { flexDirection: "row", alignItems: "flex-start", gap: 8, backgroundColor: "#eef2ff", borderRadius: 12, padding: 12, marginBottom: 10 },
+  infoBoxText: { flex: 1, fontSize: 12, fontFamily: "Inter_400Regular", color: "#4338ca", lineHeight: 18 },
 });

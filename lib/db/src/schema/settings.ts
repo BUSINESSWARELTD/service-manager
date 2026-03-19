@@ -14,6 +14,8 @@ export const settingsTable = pgTable("settings", {
   emailUser: text("email_user"),
   emailPass: text("email_pass"),
   emailFrom: text("email_from"),
+  shopName: text("shop_name").default("Υπηρεσία Επισκευής"),
+  shopPhone: text("shop_phone"),
   printerIp: text("printer_ip"),
   printerPort: integer("printer_port").default(9100),
   smsTemplate: text("sms_template").default("Your device {{deviceBrand}} {{deviceModel}} (Service ID: {{serviceId}}) is ready for pickup. Please visit us at your earliest convenience."),
