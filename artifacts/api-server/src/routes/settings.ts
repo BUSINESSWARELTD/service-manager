@@ -100,17 +100,20 @@ router.get("/analytics/dashboard", async (req, res): Promise<void> => {
     ORDER BY "jobsCompleted" DESC
   `);
 
+  const revenueRows = (Array.isArray(revenueByDay) ? revenueByDay : (revenueByDay as { rows?: unknown[] }).rows ?? []) as Array<{ date: string; revenue: string }>;
+  const techRows = (Array.isArray(techStats) ? techStats : (techStats as { rows?: unknown[] }).rows ?? []) as Array<{ technicianName: string; jobsCompleted: string; avgHoursPerJob: string }>;
+
   res.json({
     totalRevenue,
     totalTickets: totalTickets[0]?.count || 0,
     completedTickets: completedTickets[0]?.count || 0,
     averageRepairTime,
-    revenueByDay: (revenueByDay as Array<{ date: string; revenue: string }>).map(r => ({
+    revenueByDay: revenueRows.map(r => ({
       date: r.date,
       revenue: Number(r.revenue),
     })),
     topFailureTypes: topFailures,
-    technicianStats: (techStats as Array<{ technicianName: string; jobsCompleted: string; avgHoursPerJob: string }>).map(s => ({
+    technicianStats: techRows.map(s => ({
       technicianName: s.technicianName,
       jobsCompleted: Number(s.jobsCompleted),
       avgHoursPerJob: Number(s.avgHoursPerJob),

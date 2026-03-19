@@ -61,7 +61,7 @@ export default function TechniciansScreen() {
     setDeactivating(true);
     try {
       await api.technicians.deactivate(confirmTech.id);
-      await queryClient.invalidateQueries({ queryKey: ["technicians"] });
+      await queryClient.refetchQueries({ queryKey: ["technicians"] });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setConfirmTech(null);
     } catch (e: unknown) {
@@ -78,9 +78,10 @@ export default function TechniciansScreen() {
     setSaving(true);
     try {
       await api.technicians.create({ name: name.trim(), pin, role });
-      await queryClient.invalidateQueries({ queryKey: ["technicians"] });
       setShowModal(false);
       setName(""); setPin(""); setRole("technician");
+      // refetchQueries waits for the fresh data before updating the list
+      await queryClient.refetchQueries({ queryKey: ["technicians"] });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: unknown) {
       Alert.alert("Error", e instanceof Error ? e.message : "Failed to create technician");
