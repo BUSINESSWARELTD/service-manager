@@ -8,14 +8,15 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthContext";
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,21 +24,37 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
+// On web, fonts are loaded via CSS in +html.tsx — no fontfaceobserver needed.
+// On native, we use useFonts which bundles the TTF files.
+function useAppFonts() {
+  const [webReady, setWebReady] = useState(Platform.OS === "web");
+  const [fontsLoaded, fontError] = useFonts(
+    Platform.OS === "web"
+      ? {} // empty on web — CSS handles it
+      : { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold }
+  );
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+    if (Platform.OS === "web") {
+      setWebReady(true);
+      SplashScreen.hideAsync().catch(() => {});
     }
-  }, [fontsLoaded, fontError]);
+  }, []);
 
-  if (!fontsLoaded && !fontError) return null;
+  if (Platform.OS === "web") return { ready: webReady };
+  return { ready: fontsLoaded || !!fontError };
+}
+
+export default function RootLayout() {
+  const { ready } = useAppFonts();
+
+  useEffect(() => {
+    if (ready && Platform.OS !== "web") {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [ready]);
+
+  if (!ready) return null;
 
   return (
     <SafeAreaProvider>
