@@ -26,10 +26,6 @@ export class ErrorBoundary extends Component<
   };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    const msg = error?.message || "";
-    if (msg.includes("timeout exceeded") || msg.includes("fontfaceobserver")) {
-      return { error: null };
-    }
     return { error };
   }
 
