@@ -7,8 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   Platform,
+  Modal,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -19,25 +19,13 @@ import Colors from "@/constants/colors";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
-const DEFAULT_BRANDS = ["Apple", "Samsung", "Google", "Huawei", "OnePlus", "Xiaomi", "Sony", "LG", "Dell", "HP", "Lenovo", "Asus", "Acer", "Other"];
-const DEFAULT_ISSUES = [
-  "Screen cracked / broken",
-  "Battery draining fast",
-  "Won't charge",
-  "Water damage",
-  "Won't turn on",
-  "Overheating",
-  "Camera not working",
-  "Speaker issue",
-  "Microphone not working",
-  "Keyboard stuck / broken",
-  "Slow performance",
-  "Software issue",
-];
+const DEFAULT_BRANDS = ["Makita","Bosch","DeWalt","Metabo","Hilti","Milwaukee","Festool","Ryobi","AEG","Black & Decker","Skil","HiKOKI (Hitachi)","Einhell","Worx","Άλλο"];
+const DEFAULT_ISSUES = ["Δεν ξεκινάει / Won't start","Μοτέρ καμένο / Burnt motor","Μπαταρία δεν φορτίζει / Battery won't charge","Διακόπτης χαλασμένος / Switch failure","Υπερθέρμανση / Overheating","Γρανάζια φθαρμένα / Gear damage","Τσοκ μπλοκαρισμένο / Chuck stuck","Ψήκτρες άνθρακα φθαρμένες / Carbon brushes worn","Καλώδιο κομμένο / Cable damage","Δίσκος / λεπίδα δεν γυρίζει / Blade not turning","Κτύπος / θόρυβος / Abnormal noise","Μηχανική βλάβη / Mechanical failure"];
 
 function parseJsonArray(val: string | null | undefined, fallback: string[]): string[] {
-  if (!val) return fallback;
-  try { const parsed = JSON.parse(val); return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback; }
+  if (val === null || val === undefined) return fallback;
+  if (val === "[]" || val === "") return [];
+  try { const parsed = JSON.parse(val); return Array.isArray(parsed) ? parsed : fallback; }
   catch { return fallback; }
 }
 
@@ -46,6 +34,8 @@ export default function NewTicketScreen() {
   const { technician } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [successTicket, setSuccessTicket] = useState<{ id: number; serviceId: string } | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: () => api.settings.get() });
   const COMMON_BRANDS = parseJsonArray((settings as Record<string, string> | undefined)?.deviceBrands, DEFAULT_BRANDS);
@@ -71,12 +61,19 @@ export default function NewTicketScreen() {
     });
   };
 
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (!customerName.trim()) e.customerName = "Απαιτείται όνομα πελάτη";
+    if (!customerPhone.trim()) e.customerPhone = "Απαιτείται τηλέφωνο";
+    if (!deviceBrand.trim()) e.deviceBrand = "Απαιτείται μάρκα";
+    if (!deviceModel.trim()) e.deviceModel = "Απαιτείται μοντέλο";
+    if (!problemDescription.trim()) e.problemDescription = "Απαιτείται περιγραφή βλάβης";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const handleSubmit = async () => {
-    if (!customerName.trim()) { Alert.alert("Required", "Customer name is required"); return; }
-    if (!customerPhone.trim()) { Alert.alert("Required", "Customer phone is required"); return; }
-    if (!deviceBrand.trim()) { Alert.alert("Required", "Device brand is required"); return; }
-    if (!deviceModel.trim()) { Alert.alert("Required", "Device model is required"); return; }
-    if (!problemDescription.trim()) { Alert.alert("Required", "Problem description is required"); return; }
+    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -91,187 +88,229 @@ export default function NewTicketScreen() {
         estimatedCompletion: estimatedCompletion.trim() || null,
       });
 
-      await queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      await queryClient.refetchQueries({ queryKey: ["tickets"] });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      
-      Alert.alert(
-        "Ticket Created",
-        `Service ID: ${ticket.serviceId}\n\nLabel print job sent to printer.`,
-        [
-          {
-            text: "View Ticket",
-            onPress: () => router.replace({ pathname: "/ticket/[id]", params: { id: ticket.id.toString() } }),
-          },
-          { text: "New Ticket", onPress: () => router.back() },
-        ]
-      );
+      setSuccessTicket({ id: ticket.id, serviceId: ticket.serviceId });
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Failed to create ticket";
-      Alert.alert("Error", msg);
+      const msg = e instanceof Error ? e.message : "Αποτυχία δημιουργίας ticket";
+      setErrors({ submit: msg });
     } finally {
       setLoading(false);
     }
   };
 
+  const Field = ({ error }: { error?: string }) =>
+    error ? <Text style={styles.errorText}>⚠ {error}</Text> : null;
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: bottomPadding + 20 }}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-    >
-      {/* Customer Info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Customer Information</Text>
-        <View style={styles.card}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name *</Text>
-            <TextInput
-              style={styles.input}
-              value={customerName}
-              onChangeText={setCustomerName}
-              placeholder="John Smith"
-              placeholderTextColor={Colors.light.textSecondary}
-              autoCapitalize="words"
-            />
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Phone Number *</Text>
-            <TextInput
-              style={styles.input}
-              value={customerPhone}
-              onChangeText={setCustomerPhone}
-              placeholder="+1 555 000 0000"
-              placeholderTextColor={Colors.light.textSecondary}
-              keyboardType="phone-pad"
-            />
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email (optional)</Text>
-            <TextInput
-              style={styles.input}
-              value={customerEmail}
-              onChangeText={setCustomerEmail}
-              placeholder="john@example.com"
-              placeholderTextColor={Colors.light.textSecondary}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* Device Info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Device Information</Text>
-        <View style={styles.card}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Brand *</Text>
-            <TextInput
-              style={styles.input}
-              value={deviceBrand}
-              onChangeText={setDeviceBrand}
-              placeholder="Apple, Samsung, etc."
-              placeholderTextColor={Colors.light.textSecondary}
-            />
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.chipScroll}
-            contentContainerStyle={{ paddingVertical: 8, paddingHorizontal: 16, gap: 8 }}
-          >
-            {COMMON_BRANDS.map(brand => (
-              <TouchableOpacity
-                key={brand}
-                style={[styles.chip, deviceBrand === brand && styles.chipActive]}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setDeviceBrand(brand); }}
-              >
-                <Text style={[styles.chipText, deviceBrand === brand && styles.chipTextActive]}>{brand}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <View style={styles.divider} />
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Model *</Text>
-            <TextInput
-              style={styles.input}
-              value={deviceModel}
-              onChangeText={setDeviceModel}
-              placeholder="iPhone 15 Pro, Galaxy S24, etc."
-              placeholderTextColor={Colors.light.textSecondary}
-            />
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: bottomPadding + 20 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Customer Info */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Στοιχεία Πελάτη</Text>
+          <View style={styles.card}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Ονοματεπώνυμο *</Text>
+              <TextInput
+                style={[styles.input, errors.customerName && styles.inputError]}
+                value={customerName}
+                onChangeText={v => { setCustomerName(v); setErrors(p => ({ ...p, customerName: "" })); }}
+                placeholder="π.χ. Γιώργος Παπαδόπουλος"
+                placeholderTextColor={Colors.light.textSecondary}
+                autoCapitalize="words"
+              />
+              <Field error={errors.customerName} />
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Τηλέφωνο *</Text>
+              <TextInput
+                style={[styles.input, errors.customerPhone && styles.inputError]}
+                value={customerPhone}
+                onChangeText={v => { setCustomerPhone(v); setErrors(p => ({ ...p, customerPhone: "" })); }}
+                placeholder="6900000000"
+                placeholderTextColor={Colors.light.textSecondary}
+                keyboardType="phone-pad"
+              />
+              <Field error={errors.customerPhone} />
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email (προαιρετικό)</Text>
+              <TextInput
+                style={styles.input}
+                value={customerEmail}
+                onChangeText={setCustomerEmail}
+                placeholder="info@example.com"
+                placeholderTextColor={Colors.light.textSecondary}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Problem Description */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Problem Description *</Text>
-        <View style={styles.card}>
-          <Text style={styles.chipHint}>Quick select common issues:</Text>
-          <View style={styles.chipGrid}>
-            {COMMON_PROBLEMS.map(p => (
-              <TouchableOpacity
-                key={p}
-                style={[styles.chip, selectedChips.includes(p) && styles.chipActive]}
-                onPress={() => toggleChip(p)}
-              >
-                <Text style={[styles.chipText, selectedChips.includes(p) && styles.chipTextActive]}>{p}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Description</Text>
-            <TextInput
-              style={[styles.input, styles.inputMultiline]}
-              value={problemDescription}
-              onChangeText={val => {
-                setProblemDescription(val);
-                setSelectedChips([]);
-              }}
-              placeholder="Describe the problem in detail..."
-              placeholderTextColor={Colors.light.textSecondary}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* Estimated Completion */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Estimated Completion</Text>
-        <View style={styles.card}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Date (optional)</Text>
-            <TextInput
-              style={styles.input}
-              value={estimatedCompletion}
-              onChangeText={setEstimatedCompletion}
-              placeholder="2-3 business days, March 25, etc."
-              placeholderTextColor={Colors.light.textSecondary}
-            />
+        {/* Device Info */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Στοιχεία Εργαλείου</Text>
+          <View style={styles.card}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Μάρκα *</Text>
+              <TextInput
+                style={[styles.input, errors.deviceBrand && styles.inputError]}
+                value={deviceBrand}
+                onChangeText={v => { setDeviceBrand(v); setErrors(p => ({ ...p, deviceBrand: "" })); }}
+                placeholder="Makita, Bosch, κ.λπ."
+                placeholderTextColor={Colors.light.textSecondary}
+              />
+              <Field error={errors.deviceBrand} />
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.chipScroll}
+              contentContainerStyle={{ paddingVertical: 8, paddingHorizontal: 16, gap: 8 }}
+            >
+              {COMMON_BRANDS.map(brand => (
+                <TouchableOpacity
+                  key={brand}
+                  style={[styles.chip, deviceBrand === brand && styles.chipActive]}
+                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setDeviceBrand(brand); setErrors(p => ({ ...p, deviceBrand: "" })); }}
+                >
+                  <Text style={[styles.chipText, deviceBrand === brand && styles.chipTextActive]}>{brand}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <View style={styles.divider} />
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Μοντέλο / Τύπος *</Text>
+              <TextInput
+                style={[styles.input, errors.deviceModel && styles.inputError]}
+                value={deviceModel}
+                onChangeText={v => { setDeviceModel(v); setErrors(p => ({ ...p, deviceModel: "" })); }}
+                placeholder="π.χ. DHR242, GBH 2-26, κ.λπ."
+                placeholderTextColor={Colors.light.textSecondary}
+              />
+              <Field error={errors.deviceModel} />
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <>
-            <MaterialCommunityIcons name="ticket-plus" size={22} color="#fff" />
-            <Text style={styles.submitText}>Create Ticket + Print Label</Text>
-          </>
+        {/* Problem Description */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Περιγραφή Βλάβης *</Text>
+          <View style={styles.card}>
+            <Text style={styles.chipHint}>Γρήγορη επιλογή κοινών βλαβών:</Text>
+            <View style={styles.chipGrid}>
+              {COMMON_PROBLEMS.map(p => (
+                <TouchableOpacity
+                  key={p}
+                  style={[styles.chip, selectedChips.includes(p) && styles.chipActive]}
+                  onPress={() => { toggleChip(p); setErrors(prev => ({ ...prev, problemDescription: "" })); }}
+                >
+                  <Text style={[styles.chipText, selectedChips.includes(p) && styles.chipTextActive]}>{p}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Αναλυτική Περιγραφή</Text>
+              <TextInput
+                style={[styles.input, styles.inputMultiline, errors.problemDescription && styles.inputError]}
+                value={problemDescription}
+                onChangeText={val => {
+                  setProblemDescription(val);
+                  setSelectedChips([]);
+                  setErrors(p => ({ ...p, problemDescription: "" }));
+                }}
+                placeholder="Περιγράψτε αναλυτικά τη βλάβη..."
+                placeholderTextColor={Colors.light.textSecondary}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+              <Field error={errors.problemDescription} />
+            </View>
+          </View>
+        </View>
+
+        {/* Estimated Completion */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Εκτιμώμενη Ολοκλήρωση</Text>
+          <View style={styles.card}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Ημερομηνία (προαιρετικό)</Text>
+              <TextInput
+                style={styles.input}
+                value={estimatedCompletion}
+                onChangeText={setEstimatedCompletion}
+                placeholder="π.χ. 2-3 εργάσιμες, 25 Μαρτίου κ.λπ."
+                placeholderTextColor={Colors.light.textSecondary}
+              />
+            </View>
+          </View>
+        </View>
+
+        {errors.submit && (
+          <View style={styles.submitError}>
+            <Ionicons name="alert-circle" size={18} color="#EF4444" />
+            <Text style={styles.submitErrorText}>{errors.submit}</Text>
+          </View>
         )}
-      </TouchableOpacity>
-    </ScrollView>
+
+        {/* Submit Button */}
+        <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <MaterialCommunityIcons name="ticket-plus" size={22} color="#fff" />
+              <Text style={styles.submitText}>Δημιουργία Ticket</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </ScrollView>
+
+      {/* Success Modal */}
+      <Modal visible={!!successTicket} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.successIcon}>
+              <Ionicons name="checkmark-circle" size={52} color="#22C55E" />
+            </View>
+            <Text style={styles.modalTitle}>Ticket Δημιουργήθηκε!</Text>
+            <Text style={styles.modalServiceId}>{successTicket?.serviceId}</Text>
+            <Text style={styles.modalHint}>Η ετικέτα στάλθηκε στον εκτυπωτή.</Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalBtnSecondary}
+                onPress={() => {
+                  setSuccessTicket(null);
+                  router.back();
+                }}
+              >
+                <Text style={styles.modalBtnSecondaryText}>Νέο Ticket</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalBtnPrimary}
+                onPress={() => {
+                  const id = successTicket!.id;
+                  setSuccessTicket(null);
+                  router.replace({ pathname: "/ticket/[id]", params: { id: id.toString() } });
+                }}
+              >
+                <Text style={styles.modalBtnPrimaryText}>Προβολή Ticket</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -282,9 +321,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 12,
   },
-  section: {
-    marginBottom: 20,
-  },
+  section: { marginBottom: 20 },
   sectionTitle: {
     fontSize: 16,
     fontFamily: "Inter_700Bold",
@@ -296,10 +333,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
   },
-  inputGroup: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
+  inputGroup: { paddingHorizontal: 16, paddingVertical: 12 },
   label: {
     fontSize: 12,
     fontFamily: "Inter_500Medium",
@@ -317,19 +351,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     minHeight: 48,
+    borderWidth: 1,
+    borderColor: "transparent",
   },
-  inputMultiline: {
-    minHeight: 100,
-    paddingTop: 12,
+  inputError: {
+    borderColor: "#EF4444",
+    backgroundColor: "#FFF5F5",
   },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.light.border,
-    marginHorizontal: 16,
+  inputMultiline: { minHeight: 100, paddingTop: 12 },
+  errorText: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    color: "#EF4444",
+    marginTop: 5,
   },
-  chipScroll: {
-    marginBottom: 4,
-  },
+  divider: { height: 1, backgroundColor: Colors.light.border, marginHorizontal: 16 },
+  chipScroll: { marginBottom: 4 },
   chipHint: {
     fontSize: 13,
     fontFamily: "Inter_400Regular",
@@ -353,19 +390,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.border,
   },
-  chipActive: {
-    backgroundColor: Colors.brand.primary,
-    borderColor: Colors.brand.primary,
-  },
-  chipText: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    color: Colors.light.text,
-  },
-  chipTextActive: {
-    color: "#fff",
-    fontFamily: "Inter_500Medium",
-  },
+  chipActive: { backgroundColor: Colors.brand.primary, borderColor: Colors.brand.primary },
+  chipText: { fontSize: 13, fontFamily: "Inter_400Regular", color: Colors.light.text },
+  chipTextActive: { color: "#fff", fontFamily: "Inter_500Medium" },
   submitBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -381,9 +408,83 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 6,
   },
-  submitText: {
-    fontSize: 17,
-    fontFamily: "Inter_700Bold",
-    color: "#fff",
+  submitText: { fontSize: 17, fontFamily: "Inter_700Bold", color: "#fff" },
+  submitError: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FEF2F2",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
   },
+  submitErrorText: { fontSize: 14, fontFamily: "Inter_400Regular", color: "#EF4444", flex: 1 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalBox: {
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    padding: 28,
+    width: "100%",
+    maxWidth: 360,
+    alignItems: "center",
+  },
+  successIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#F0FDF4",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontFamily: "Inter_700Bold",
+    color: Colors.light.text,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  modalServiceId: {
+    fontSize: 18,
+    fontFamily: "Inter_600SemiBold",
+    color: Colors.brand.primary,
+    marginBottom: 8,
+  },
+  modalHint: {
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    color: Colors.light.textSecondary,
+    marginBottom: 24,
+    textAlign: "center",
+  },
+  modalActions: { flexDirection: "row", gap: 12, width: "100%" },
+  modalBtnSecondary: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Colors.brand.primary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalBtnSecondaryText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: Colors.brand.primary,
+  },
+  modalBtnPrimary: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: Colors.brand.primary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalBtnPrimaryText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#fff" },
 });
