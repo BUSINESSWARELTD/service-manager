@@ -90,7 +90,6 @@ export default function SettingsScreen() {
   const { technician, logout } = useAuth();
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
-  const [seeding, setSeeding] = useState(false);
 
   const topPadding = Platform.OS === "web" ? 67 : insets.top;
   const bottomPadding = Platform.OS === "web" ? 34 : insets.bottom;
@@ -173,18 +172,6 @@ export default function SettingsScreen() {
     } else {
       Linking.openURL(url).catch(() => Alert.alert("Σφάλμα", "Δεν ήταν δυνατό το άνοιγμα του εγχειριδίου."));
     }
-  };
-
-  const handleSeedData = async () => {
-    Alert.alert("Seed Sample Data", "This will add sample tickets and parts. Continue?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Seed Data", onPress: async () => {
-        setSeeding(true);
-        try { await api.seed(); await queryClient.invalidateQueries({ queryKey: ["tickets"] }); Alert.alert("Success", "Sample data seeded successfully"); }
-        catch { Alert.alert("Error", "Failed to seed data"); }
-        finally { setSeeding(false); }
-      }},
-    ]);
   };
 
   return (
@@ -348,10 +335,6 @@ export default function SettingsScreen() {
 
       {/* Actions */}
       <View style={styles.actionsSection}>
-        <TouchableOpacity style={styles.seedBtn} onPress={handleSeedData} disabled={seeding}>
-          {seeding ? <ActivityIndicator size="small" color={Colors.brand.primary} /> : <MaterialCommunityIcons name="database-plus" size={20} color={Colors.brand.primary} />}
-          <Text style={styles.seedText}>Seed Sample Data</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
           {saving ? <ActivityIndicator size="small" color="#fff" /> : <Ionicons name="save-outline" size={20} color="#fff" />}
           <Text style={styles.saveText}>Save Settings</Text>
@@ -385,8 +368,6 @@ const styles = StyleSheet.create({
   actionRow: { flexDirection: "row", alignItems: "center", backgroundColor: Colors.light.card, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 18 },
   actionRowText: { flex: 1, fontSize: 16, fontFamily: "Inter_500Medium", color: Colors.light.text },
   actionsSection: { gap: 12, marginTop: 8 },
-  seedBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 54, borderRadius: 16, borderWidth: 2, borderColor: Colors.brand.primary, backgroundColor: "transparent" },
-  seedText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: Colors.brand.primary },
   saveBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 16, backgroundColor: Colors.brand.primary, shadowColor: Colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
   saveText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#fff" },
   tagSectionLabel: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: Colors.light.text },
