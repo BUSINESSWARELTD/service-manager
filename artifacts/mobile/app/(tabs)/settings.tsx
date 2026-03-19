@@ -20,12 +20,13 @@ import Colors from "@/constants/colors";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
-const DEFAULT_BRANDS = ["Apple","Samsung","Google","Huawei","OnePlus","Xiaomi","Sony","LG","Dell","HP","Lenovo","Asus","Acer","Other"];
-const DEFAULT_ISSUES = ["Screen cracked / broken","Battery draining fast","Won't charge","Water damage","Won't turn on","Overheating","Camera not working","Speaker issue","Microphone not working","Keyboard stuck / broken","Slow performance","Software issue"];
+const DEFAULT_BRANDS = ["Makita","Bosch","DeWalt","Metabo","Hilti","Milwaukee","Festool","Ryobi","AEG","Black & Decker","Skil","HiKOKI (Hitachi)","Einhell","Worx","Άλλο"];
+const DEFAULT_ISSUES = ["Δεν ξεκινάει / Won't start","Μοτέρ καμένο / Burnt motor","Μπαταρία δεν φορτίζει / Battery won't charge","Διακόπτης χαλασμένος / Switch failure","Υπερθέρμανση / Overheating","Γρανάζια φθαρμένα / Gear damage","Τσοκ μπλοκαρισμένο / Chuck stuck","Ψήκτρες άνθρακα φθαρμένες / Carbon brushes worn","Καλώδιο κομμένο / Cable damage","Δίσκος / λεπίδα δεν γυρίζει / Blade not turning","Κτύπος / θόρυβος / Abnormal noise","Μηχανική βλάβη / Mechanical failure"];
 
 function parseJsonArray(val: string | null | undefined, fallback: string[]): string[] {
-  if (!val) return fallback;
-  try { const p = JSON.parse(val); return Array.isArray(p) && p.length > 0 ? p : fallback; }
+  if (val === null || val === undefined) return fallback;
+  if (val === "[]" || val === "") return []; // allow intentionally empty list
+  try { const p = JSON.parse(val); return Array.isArray(p) ? p : fallback; }
   catch { return fallback; }
 }
 
@@ -225,7 +226,7 @@ export default function SettingsScreen() {
               tags={brands}
               onAdd={v => setBrands(prev => [...prev, v])}
               onRemove={v => setBrands(prev => prev.filter(b => b !== v))}
-              placeholder="π.χ. Makita, Bosch..."
+              placeholder="π.χ. Bosch, Hilti, Snap-on..."
               addLabel="Προσθήκη"
             />
           </View>
@@ -237,7 +238,7 @@ export default function SettingsScreen() {
               tags={issues}
               onAdd={v => setIssues(prev => [...prev, v])}
               onRemove={v => setIssues(prev => prev.filter(i => i !== v))}
-              placeholder="π.χ. Σπασμένη λεπίδα..."
+              placeholder="π.χ. Καπάκι κομμένο, Περιστρέφεται μόνο..."
               addLabel="Προσθήκη"
             />
           </View>
