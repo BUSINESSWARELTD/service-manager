@@ -61,6 +61,8 @@ export default function TicketDetailScreen() {
   const [note, setNote] = useState("");
   const [statusReason, setStatusReason] = useState("");
   const [targetStatus, setTargetStatus] = useState("");
+  const [statusError, setStatusError] = useState("");
+  const [statusChanging, setStatusChanging] = useState(false);
 
   // Labor timer display
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -183,11 +185,9 @@ export default function TicketDetailScreen() {
     setNote("");
   };
 
-  const handleStatusChange = async (newStatus: string, confirm?: boolean) => {
-    const needsReason = ["received", "diagnosing", "repairing", "waiting_for_parts"].some(
-      s => STATUS_FLOW.indexOf(STATUS_FLOW.find(x => x.key === s)!) > STATUS_FLOW.indexOf(STATUS_FLOW.find(x => x.key === newStatus)!)
-    );
-
+  const handleStatusChange = async (newStatus: string) => {
+    setStatusError("");
+    setStatusChanging(true);
     try {
       await api.tickets.updateStatus(ticketId, {
         status: newStatus,
@@ -199,9 +199,14 @@ export default function TicketDetailScreen() {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
       setShowStatusModal(false);
       setStatusReason("");
+      setTargetStatus("");
+      setStatusError("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: unknown) {
-      Alert.alert("Cannot Change Status", e instanceof Error ? e.message : "Status change failed");
+      const msg = e instanceof Error ? e.message : "Status change failed";
+      setStatusError(msg);
+    } finally {
+      setStatusChanging(false);
     }
   };
 
@@ -588,12 +593,17 @@ export default function TicketDetailScreen() {
       </Modal>
 
       {/* Status Change Modal */}
-      <Modal visible={showStatusModal} animationType="slide" transparent>
+      <Modal
+        visible={showStatusModal}
+        animationType="slide"
+        transparent
+        onShow={() => { setTargetStatus(""); setStatusError(""); setStatusReason(""); }}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Change Status</Text>
-              <TouchableOpacity onPress={() => setShowStatusModal(false)}>
+              <Text style={styles.modalTitle}>Αλλαγή Κατάστασης</Text>
+              <TouchableOpacity onPress={() => { setShowStatusModal(false); setStatusError(""); setTargetStatus(""); }}>
                 <Ionicons name="close" size={24} color={Colors.light.text} />
               </TouchableOpacity>
             </View>
@@ -601,6 +611,7 @@ export default function TicketDetailScreen() {
               {STATUS_FLOW.map(s => {
                 const color = STATUS_COLORS[s.key as keyof typeof STATUS_COLORS];
                 const isCurrent = ticket.status === s.key;
+                const isSelected = targetStatus === s.key && !isCurrent;
                 return (
                   <TouchableOpacity
                     key={s.key}
@@ -608,31 +619,63 @@ export default function TicketDetailScreen() {
                       styles.statusOption,
                       { borderColor: color.bg },
                       isCurrent && { backgroundColor: color.bg },
+                      isSelected && { backgroundColor: color.bg + "33", borderWidth: 3 },
                     ]}
                     onPress={() => {
                       if (!isCurrent) {
                         setTargetStatus(s.key);
-                        handleStatusChange(s.key);
+                        setStatusError("");
                       }
                     }}
                     disabled={isCurrent}
                   >
                     <View style={[styles.statusDot, { backgroundColor: isCurrent ? "#fff" : color.bg }]} />
                     <Text style={[styles.statusOptionText, isCurrent && { color: "#fff" }]}>{s.label}</Text>
-                    {isCurrent ? <Text style={styles.currentTag}>Current</Text> : null}
+                    {isCurrent ? <Text style={styles.currentTag}>Τρέχουσα</Text> : null}
+                    {isSelected ? <Ionicons name="checkmark-circle" size={20} color={color.bg} /> : null}
                   </TouchableOpacity>
                 );
               })}
-              <View style={{ gap: 6 }}>
-                <Text style={styles.modalLabel}>Reason (required for backward transitions)</Text>
+
+              {/* Reason input */}
+              <View style={{ gap: 6, marginTop: 4 }}>
+                <Text style={styles.modalLabel}>Αιτιολογία (απαιτείται για οπισθοδρόμηση κατάστασης)</Text>
                 <TextInput
                   style={styles.modalInput}
                   value={statusReason}
                   onChangeText={setStatusReason}
-                  placeholder="Optional reason..."
+                  placeholder="Προαιρετική αιτιολογία..."
                   placeholderTextColor={Colors.light.textSecondary}
                 />
               </View>
+
+              {/* Inline error */}
+              {statusError ? (
+                <View style={styles.statusErrorBox}>
+                  <Ionicons name="warning" size={16} color="#dc2626" />
+                  <Text style={styles.statusErrorText}>{statusError}</Text>
+                </View>
+              ) : null}
+
+              {/* Confirm button */}
+              <TouchableOpacity
+                style={[
+                  styles.modalBtn,
+                  (!targetStatus || statusChanging) && { opacity: 0.4 },
+                ]}
+                onPress={() => targetStatus && handleStatusChange(targetStatus)}
+                disabled={!targetStatus || statusChanging}
+              >
+                {statusChanging ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.modalBtnText}>
+                    {targetStatus
+                      ? `Επιβεβαίωση → ${STATUS_FLOW.find(s => s.key === targetStatus)?.label}`
+                      : "Επιλέξτε κατάσταση"}
+                  </Text>
+                )}
+              </TouchableOpacity>
             </ScrollView>
           </View>
         </View>
@@ -839,4 +882,6 @@ const styles = StyleSheet.create({
   qrUrl: { fontSize: 11, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary, lineHeight: 16 },
   qrOpenBtn: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
   qrOpenBtnText: { fontSize: 13, fontFamily: "Inter_500Medium", color: Colors.brand.primary },
+  statusErrorBox: { flexDirection: "row", alignItems: "flex-start", gap: 8, backgroundColor: "#fef2f2", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "#fecaca" },
+  statusErrorText: { flex: 1, fontSize: 13, fontFamily: "Inter_500Medium", color: "#dc2626", lineHeight: 18 },
 });
