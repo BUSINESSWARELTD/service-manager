@@ -63,6 +63,10 @@ export default function TicketDetailScreen() {
   const [targetStatus, setTargetStatus] = useState("");
   const [statusError, setStatusError] = useState("");
   const [statusChanging, setStatusChanging] = useState(false);
+  const [partError, setPartError] = useState("");
+  const [laborError, setLaborError] = useState("");
+  const [workSummaryError, setWorkSummaryError] = useState("");
+  const [removeConfirmId, setRemoveConfirmId] = useState<number | null>(null);
 
   // Labor timer display
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -91,7 +95,9 @@ export default function TicketDetailScreen() {
   };
 
   const handleAddPart = async () => {
-    if (!partName.trim() || !partPrice) { Alert.alert("Required", "Part name and price are required"); return; }
+    if (!partName.trim()) { setPartError("Το όνομα ανταλλακτικού είναι υποχρεωτικό"); return; }
+    if (!partPrice || parseFloat(partPrice) <= 0) { setPartError("Η τιμή είναι υποχρεωτική"); return; }
+    setPartError("");
     try {
       await api.parts.addToTicket(ticketId, {
         partName: partName.trim(),
@@ -106,33 +112,34 @@ export default function TicketDetailScreen() {
       setPartName(""); setPartQty("1"); setPartPrice(""); setPartWarranty("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: unknown) {
-      Alert.alert("Error", e instanceof Error ? e.message : "Failed to add part");
+      setPartError(e instanceof Error ? e.message : "Αποτυχία προσθήκης ανταλλακτικού");
     }
   };
 
   const handleRemovePart = async (partId: number) => {
-    Alert.alert("Remove Part", "Remove this part from the ticket?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: async () => {
-          await api.parts.removeFromTicket(ticketId, partId);
-          await refetch();
-          queryClient.invalidateQueries({ queryKey: ["tickets"] });
-        },
-      },
-    ]);
+    setRemoveConfirmId(partId);
+  };
+
+  const confirmRemovePart = async () => {
+    if (!removeConfirmId) return;
+    try {
+      await api.parts.removeFromTicket(ticketId, removeConfirmId);
+      await refetch();
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    } catch { /* silent */ } finally {
+      setRemoveConfirmId(null);
+    }
   };
 
   const handleStartTimer = async () => {
+    setLaborError("");
     try {
       await api.labor.add(ticketId, { technicianId: technician?.id || null, mode: "timer" });
       await refetch();
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setShowLaborModal(false);
     } catch (e: unknown) {
-      Alert.alert("Error", e instanceof Error ? e.message : "Failed to start timer");
+      setLaborError(e instanceof Error ? e.message : "Αποτυχία εκκίνησης χρονομέτρου");
     }
   };
 
@@ -142,13 +149,12 @@ export default function TicketDetailScreen() {
       await refetch();
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch (e: unknown) {
-      Alert.alert("Error", e instanceof Error ? e.message : "Failed to stop timer");
-    }
+    } catch { /* silent — timer row will remain */ }
   };
 
   const handleAddManualLabor = async () => {
-    if (!manualHours || parseFloat(manualHours) <= 0) { Alert.alert("Required", "Enter hours worked"); return; }
+    if (!manualHours || parseFloat(manualHours) <= 0) { setLaborError("Εισάγετε ώρες εργασίας"); return; }
+    setLaborError("");
     try {
       await api.labor.add(ticketId, {
         technicianId: technician?.id || null,
@@ -161,19 +167,20 @@ export default function TicketDetailScreen() {
       setManualHours("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: unknown) {
-      Alert.alert("Error", e instanceof Error ? e.message : "Failed to log labor");
+      setLaborError(e instanceof Error ? e.message : "Αποτυχία καταχώρησης εργασίας");
     }
   };
 
   const handleSubmitWorkSummary = async () => {
-    if (!workSummary.trim()) { Alert.alert("Required", "Work summary is required"); return; }
+    if (!workSummary.trim()) { setWorkSummaryError("Η περίληψη εργασίας είναι υποχρεωτική"); return; }
+    setWorkSummaryError("");
     try {
       await api.tickets.submitWorkSummary(ticketId, { workSummary: workSummary.trim(), technicianId: technician?.id || null });
       await refetch();
       setShowWorkSummaryModal(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: unknown) {
-      Alert.alert("Error", e instanceof Error ? e.message : "Failed to submit work summary");
+      setWorkSummaryError(e instanceof Error ? e.message : "Αποτυχία υποβολής");
     }
   };
 
@@ -472,22 +479,33 @@ export default function TicketDetailScreen() {
       </ScrollView>
 
       {/* Add Part Modal */}
-      <Modal visible={showPartsModal} animationType="slide" transparent>
+      <Modal
+        visible={showPartsModal}
+        animationType="slide"
+        transparent
+        onShow={() => { setPartError(""); setPartName(""); setPartQty("1"); setPartPrice(""); setPartWarranty(""); }}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Part</Text>
-              <TouchableOpacity onPress={() => setShowPartsModal(false)}>
+              <Text style={styles.modalTitle}>Προσθήκη Ανταλλακτικού</Text>
+              <TouchableOpacity onPress={() => { setShowPartsModal(false); setPartError(""); }}>
                 <Ionicons name="close" size={24} color={Colors.light.text} />
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 20 }} keyboardShouldPersistTaps="handled">
-              <LabeledInput label="Part Name *" value={partName} onChangeText={setPartName} placeholder="iPhone 14 Battery" />
-              <LabeledInput label="Quantity" value={partQty} onChangeText={setPartQty} placeholder="1" keyboardType="numeric" />
-              <LabeledInput label="Unit Price (€) *" value={partPrice} onChangeText={setPartPrice} placeholder="45.00" keyboardType="decimal-pad" />
-              <LabeledInput label="Warranty Period" value={partWarranty} onChangeText={setPartWarranty} placeholder="6 months" />
+              <LabeledInput label="Όνομα Ανταλλακτικού *" value={partName} onChangeText={t => { setPartName(t); setPartError(""); }} placeholder="π.χ. Κάρβουνα Μοτέρ" />
+              <LabeledInput label="Ποσότητα" value={partQty} onChangeText={setPartQty} placeholder="1" keyboardType="numeric" />
+              <LabeledInput label="Τιμή Μονάδας (€) *" value={partPrice} onChangeText={t => { setPartPrice(t); setPartError(""); }} placeholder="45.00" keyboardType="decimal-pad" />
+              <LabeledInput label="Περίοδος Εγγύησης" value={partWarranty} onChangeText={setPartWarranty} placeholder="6 μήνες" />
+              {partError ? (
+                <View style={styles.statusErrorBox}>
+                  <Ionicons name="warning" size={16} color="#dc2626" />
+                  <Text style={styles.statusErrorText}>{partError}</Text>
+                </View>
+              ) : null}
               <TouchableOpacity style={styles.modalBtn} onPress={handleAddPart}>
-                <Text style={styles.modalBtnText}>Add Part</Text>
+                <Text style={styles.modalBtnText}>Προσθήκη Ανταλλακτικού</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
@@ -495,44 +513,57 @@ export default function TicketDetailScreen() {
       </Modal>
 
       {/* Labor Modal */}
-      <Modal visible={showLaborModal} animationType="slide" transparent>
+      <Modal
+        visible={showLaborModal}
+        animationType="slide"
+        transparent
+        onShow={() => { setLaborError(""); setManualHours(""); }}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Log Labor</Text>
-              <TouchableOpacity onPress={() => setShowLaborModal(false)}>
+              <Text style={styles.modalTitle}>Καταχώρηση Εργασίας</Text>
+              <TouchableOpacity onPress={() => { setShowLaborModal(false); setLaborError(""); }}>
                 <Ionicons name="close" size={24} color={Colors.light.text} />
               </TouchableOpacity>
             </View>
-            <View style={styles.laborModeRow}>
-              <TouchableOpacity
-                style={[styles.laborModeBtn, laborMode === "timer" && styles.laborModeBtnActive]}
-                onPress={() => setLaborMode("timer")}
-              >
-                <Ionicons name="timer-outline" size={20} color={laborMode === "timer" ? "#fff" : Colors.light.textSecondary} />
-                <Text style={[styles.laborModeBtnText, laborMode === "timer" && styles.laborModeBtnTextActive]}>Start Timer</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.laborModeBtn, laborMode === "manual" && styles.laborModeBtnActive]}
-                onPress={() => setLaborMode("manual")}
-              >
-                <Ionicons name="create-outline" size={20} color={laborMode === "manual" ? "#fff" : Colors.light.textSecondary} />
-                <Text style={[styles.laborModeBtnText, laborMode === "manual" && styles.laborModeBtnTextActive]}>Manual Hours</Text>
-              </TouchableOpacity>
-            </View>
-            {laborMode === "timer" ? (
-              <TouchableOpacity style={styles.modalBtn} onPress={handleStartTimer}>
-                <Ionicons name="play" size={18} color="#fff" />
-                <Text style={styles.modalBtnText}>Start Timer</Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={{ gap: 12 }}>
-                <LabeledInput label="Hours Worked" value={manualHours} onChangeText={setManualHours} placeholder="1.5" keyboardType="decimal-pad" />
-                <TouchableOpacity style={styles.modalBtn} onPress={handleAddManualLabor}>
-                  <Text style={styles.modalBtnText}>Log Labor</Text>
+            <View style={{ gap: 12, padding: 4 }}>
+              <View style={styles.laborModeRow}>
+                <TouchableOpacity
+                  style={[styles.laborModeBtn, laborMode === "timer" && styles.laborModeBtnActive]}
+                  onPress={() => { setLaborMode("timer"); setLaborError(""); }}
+                >
+                  <Ionicons name="timer-outline" size={20} color={laborMode === "timer" ? "#fff" : Colors.light.textSecondary} />
+                  <Text style={[styles.laborModeBtnText, laborMode === "timer" && styles.laborModeBtnTextActive]}>Χρονόμετρο</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.laborModeBtn, laborMode === "manual" && styles.laborModeBtnActive]}
+                  onPress={() => { setLaborMode("manual"); setLaborError(""); }}
+                >
+                  <Ionicons name="create-outline" size={20} color={laborMode === "manual" ? "#fff" : Colors.light.textSecondary} />
+                  <Text style={[styles.laborModeBtnText, laborMode === "manual" && styles.laborModeBtnTextActive]}>Χειροκίνητα</Text>
                 </TouchableOpacity>
               </View>
-            )}
+              {laborMode === "timer" ? (
+                <TouchableOpacity style={styles.modalBtn} onPress={handleStartTimer}>
+                  <Ionicons name="play" size={18} color="#fff" />
+                  <Text style={styles.modalBtnText}>Εκκίνηση Χρονομέτρου</Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={{ gap: 12 }}>
+                  <LabeledInput label="Ώρες Εργασίας" value={manualHours} onChangeText={t => { setManualHours(t); setLaborError(""); }} placeholder="1.5" keyboardType="decimal-pad" />
+                  <TouchableOpacity style={styles.modalBtn} onPress={handleAddManualLabor}>
+                    <Text style={styles.modalBtnText}>Καταχώρηση Ωρών</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {laborError ? (
+                <View style={styles.statusErrorBox}>
+                  <Ionicons name="warning" size={16} color="#dc2626" />
+                  <Text style={styles.statusErrorText}>{laborError}</Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
       </Modal>
@@ -542,24 +573,30 @@ export default function TicketDetailScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Work Summary</Text>
-              <TouchableOpacity onPress={() => setShowWorkSummaryModal(false)}>
+              <Text style={styles.modalTitle}>Περίληψη Εργασίας</Text>
+              <TouchableOpacity onPress={() => { setShowWorkSummaryModal(false); setWorkSummaryError(""); }}>
                 <Ionicons name="close" size={24} color={Colors.light.text} />
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalHint}>Required before marking ticket as Ready for Pickup</Text>
+            <Text style={styles.modalHint}>Απαιτείται πριν την αλλαγή σε "Έτοιμο για Παραλαβή"</Text>
             <TextInput
               style={[styles.modalInput, styles.modalInputMultiline]}
               value={workSummary}
-              onChangeText={setWorkSummary}
-              placeholder="Describe the repair performed, parts replaced, and test results..."
+              onChangeText={t => { setWorkSummary(t); setWorkSummaryError(""); }}
+              placeholder="Περιγράψτε τις εργασίες, τα ανταλλακτικά που αντικαταστάθηκαν και τα αποτελέσματα δοκιμής..."
               placeholderTextColor={Colors.light.textSecondary}
               multiline
               numberOfLines={5}
               textAlignVertical="top"
             />
+            {workSummaryError ? (
+              <View style={[styles.statusErrorBox, { marginTop: 8 }]}>
+                <Ionicons name="warning" size={16} color="#dc2626" />
+                <Text style={styles.statusErrorText}>{workSummaryError}</Text>
+              </View>
+            ) : null}
             <TouchableOpacity style={[styles.modalBtn, { marginTop: 12 }]} onPress={handleSubmitWorkSummary}>
-              <Text style={styles.modalBtnText}>Submit Summary</Text>
+              <Text style={styles.modalBtnText}>Υποβολή Περίληψης</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -588,6 +625,35 @@ export default function TicketDetailScreen() {
             <TouchableOpacity style={[styles.modalBtn, { marginTop: 12 }]} onPress={handleAddNote}>
               <Text style={styles.modalBtnText}>Add Note</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Remove Part Confirmation */}
+      <Modal visible={removeConfirmId !== null} animationType="fade" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalSheet, { paddingHorizontal: 20, paddingVertical: 24, gap: 16 }]}>
+            <View style={{ alignItems: "center", gap: 12 }}>
+              <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: "#fef2f2", alignItems: "center", justifyContent: "center" }}>
+                <Ionicons name="trash" size={28} color="#dc2626" />
+              </View>
+              <Text style={{ fontSize: 17, fontFamily: "Inter_700Bold", color: Colors.light.text, textAlign: "center" }}>Αφαίρεση Ανταλλακτικού;</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Inter_400Regular", color: Colors.light.textSecondary, textAlign: "center" }}>Το ανταλλακτικό θα αφαιρεθεί από το ticket και το σύνολο θα ενημερωθεί.</Text>
+            </View>
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <TouchableOpacity
+                style={[styles.modalBtn, { flex: 1, backgroundColor: Colors.light.border }]}
+                onPress={() => setRemoveConfirmId(null)}
+              >
+                <Text style={[styles.modalBtnText, { color: Colors.light.text }]}>Ακύρωση</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalBtn, { flex: 1, backgroundColor: "#dc2626" }]}
+                onPress={confirmRemovePart}
+              >
+                <Text style={styles.modalBtnText}>Αφαίρεση</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
