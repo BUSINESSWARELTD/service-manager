@@ -43,6 +43,11 @@ export default function RootLayout() {
   const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
+    if (Platform.OS === "web") {
+      setFontsReady(true);
+      SplashScreen.hideAsync().catch(() => {});
+      return;
+    }
     Font.loadAsync({
       Inter_400Regular,
       Inter_500Medium,
