@@ -715,11 +715,40 @@ export default function TicketDetailScreen() {
                 />
               </View>
 
-              {/* Inline error */}
+              {/* Inline error — with contextual shortcut when possible */}
               {statusError ? (
                 <View style={styles.statusErrorBox}>
-                  <Ionicons name="warning" size={16} color="#dc2626" />
-                  <Text style={styles.statusErrorText}>{statusError}</Text>
+                  <Ionicons name="warning" size={16} color="#dc2626" style={{ marginTop: 1 }} />
+                  <View style={{ flex: 1, gap: 8 }}>
+                    <Text style={styles.statusErrorText}>{statusError}</Text>
+                    {statusError.includes("Work Summary") ? (
+                      <TouchableOpacity
+                        style={styles.statusErrorAction}
+                        onPress={() => {
+                          setShowStatusModal(false);
+                          setStatusError("");
+                          setTargetStatus("");
+                          setTimeout(() => setShowWorkSummaryModal(true), 300);
+                        }}
+                      >
+                        <Ionicons name="document-text-outline" size={14} color="#fff" />
+                        <Text style={styles.statusErrorActionText}>Συμπλήρωσε Περίληψη Εργασίας τώρα →</Text>
+                      </TouchableOpacity>
+                    ) : statusError.includes("part") || statusError.includes("labor") ? (
+                      <TouchableOpacity
+                        style={styles.statusErrorAction}
+                        onPress={() => {
+                          setShowStatusModal(false);
+                          setStatusError("");
+                          setTargetStatus("");
+                          setTimeout(() => setShowPartsModal(true), 300);
+                        }}
+                      >
+                        <Ionicons name="cube-outline" size={14} color="#fff" />
+                        <Text style={styles.statusErrorActionText}>Πρόσθεσε Ανταλλακτικό ή Εργασία →</Text>
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
                 </View>
               ) : null}
 
@@ -949,5 +978,7 @@ const styles = StyleSheet.create({
   qrOpenBtn: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
   qrOpenBtnText: { fontSize: 13, fontFamily: "Inter_500Medium", color: Colors.brand.primary },
   statusErrorBox: { flexDirection: "row", alignItems: "flex-start", gap: 8, backgroundColor: "#fef2f2", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "#fecaca" },
-  statusErrorText: { flex: 1, fontSize: 13, fontFamily: "Inter_500Medium", color: "#dc2626", lineHeight: 18 },
+  statusErrorText: { fontSize: 13, fontFamily: "Inter_500Medium", color: "#dc2626", lineHeight: 18 },
+  statusErrorAction: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#dc2626", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, alignSelf: "flex-start" },
+  statusErrorActionText: { fontSize: 12, fontFamily: "Inter_600SemiBold", color: "#fff" },
 });
