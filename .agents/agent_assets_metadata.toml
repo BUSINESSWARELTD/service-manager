@@ -6,3 +6,15 @@ id = "Dp0d69TBsGSLCjcZ1HjBU"
 uri = "file://ServiceManager_Εγχειρίδιο_Χρήσης.pdf"
 type = "pdf"
 title = "Service Manager — Εγχειρίδιο Χρήσης v2.0"
+
+[[outputs]]
+id = "NxeGhi0CLRpRmmZINALJn"
+uri = "file://.canvas/assets/manual_gr.pdf"
+type = "pdf"
+title = "Εγχειρίδιο Χρήστη (Ελληνικά)"
+
+[[outputs]]
+id = "tzcka2-H42Ygoes6iVhUD"
+uri = "file://.canvas/assets/manual_en.pdf"
+type = "pdf"
+title = "User Manual (English)"
