@@ -166,9 +166,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleDownloadManual = () => {
-    const domain = process.env.EXPO_PUBLIC_DOMAIN;
-    const url = domain ? `https://${domain}/api/download/manual` : "/api/download/manual";
+  const openManualUrl = (url: string) => {
     if (Platform.OS === "web") {
       try {
         const a = document.createElement("a");
@@ -178,6 +176,18 @@ export default function SettingsScreen() {
     } else {
       Linking.openURL(url).catch(() => Alert.alert("Σφάλμα", "Δεν ήταν δυνατό το άνοιγμα του εγχειριδίου."));
     }
+  };
+
+  const handleDownloadManual = () => {
+    const domain = process.env.EXPO_PUBLIC_DOMAIN;
+    const url = domain ? `https://${domain}/api/download/manual` : "/api/download/manual";
+    openManualUrl(url);
+  };
+
+  const handleDownloadManualEn = () => {
+    const domain = process.env.EXPO_PUBLIC_DOMAIN;
+    const url = domain ? `https://${domain}/api/download/manual/en` : "/api/download/manual/en";
+    openManualUrl(url);
   };
 
   return (
@@ -345,15 +355,26 @@ export default function SettingsScreen() {
           <Ionicons name="document-text-outline" size={20} color={Colors.brand.primary} />
           <Text style={styles.sectionTitle}>Εγχειρίδιο Χρήσης</Text>
         </View>
-        <TouchableOpacity style={styles.actionRow} onPress={handleDownloadManual}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.actionRowText}>Λήψη Εγχειριδίου (PDF)</Text>
-            <Text style={{ fontSize: 12, color: Colors.light.textSecondary, marginTop: 2 }}>
-              Service Manager v1.0 — Λύσεις Επιχειρηματικού Λογισμικού
-            </Text>
-          </View>
-          <Ionicons name="download-outline" size={20} color={Colors.brand.primary} />
-        </TouchableOpacity>
+        <View style={{ gap: 10 }}>
+          <TouchableOpacity style={styles.actionRow} onPress={handleDownloadManual}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.actionRowText}>Εγχειρίδιο Χρήσης (Ελληνικά)</Text>
+              <Text style={{ fontSize: 12, color: Colors.light.textSecondary, marginTop: 2 }}>
+                Service Manager v1.0 — PDF
+              </Text>
+            </View>
+            <Ionicons name="download-outline" size={20} color={Colors.brand.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionRow} onPress={handleDownloadManualEn}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.actionRowText}>User Manual (English)</Text>
+              <Text style={{ fontSize: 12, color: Colors.light.textSecondary, marginTop: 2 }}>
+                Service Manager v1.0 — PDF
+              </Text>
+            </View>
+            <Ionicons name="download-outline" size={20} color={Colors.brand.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Actions */}
