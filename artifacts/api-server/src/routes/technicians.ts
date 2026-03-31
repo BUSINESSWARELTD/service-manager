@@ -26,6 +26,45 @@ router.post("/technicians", async (req, res): Promise<void> => {
   res.status(201).json({ ...tech, createdAt: tech.createdAt.toISOString() });
 });
 
+// PATCH /technicians/:id  (update name, pin, role)
+router.patch("/technicians/:id", async (req, res): Promise<void> => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
+
+  const { name, pin, role } = req.body;
+  if (role && !["technician", "manager"].includes(role)) {
+    res.status(400).json({ error: "role must be 'technician' or 'manager'" });
+    return;
+  }
+
+  // Prevent demoting the last manager
+  if (role === "technician") {
+    const [current] = await db.select().from(techniciansTable).where(eq(techniciansTable.id, id));
+    if (current?.role === "manager") {
+      const allActive = await db.select().from(techniciansTable).where(eq(techniciansTable.isActive, true));
+      const managers = allActive.filter(t => t.role === "manager");
+      if (managers.length <= 1) {
+        res.status(400).json({ error: "Δεν μπορείτε να υποβαθμίσετε τον τελευταίο manager" });
+        return;
+      }
+    }
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (name) updates.name = name;
+  if (pin) updates.pin = pin;
+  if (role) updates.role = role;
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: "No fields to update" });
+    return;
+  }
+
+  const [updated] = await db.update(techniciansTable).set(updates).where(eq(techniciansTable.id, id)).returning();
+  if (!updated) { res.status(404).json({ error: "Technician not found" }); return; }
+  res.json({ ...updated, createdAt: updated.createdAt.toISOString() });
+});
+
 // DELETE /technicians/:id  (soft delete — sets isActive = false)
 router.delete("/technicians/:id", async (req, res): Promise<void> => {
   const id = parseInt(req.params.id, 10);
