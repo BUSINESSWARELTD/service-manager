@@ -4,15 +4,31 @@ const BASE = process.env.EXPO_PUBLIC_DOMAIN
 
 async function apiFetch(path: string, options?: RequestInit) {
   const url = `${BASE}${path}`;
+  let fetchUrl = url;
+  let fetchOptions: RequestInit = { ...options };
+
+  // For non-GET requests, tunnel through GET query params to bypass
+  // networks that block POST/PATCH/DELETE (Cloudflare Bot Fight Mode etc.)
+  const method = (options?.method || "GET").toUpperCase();
+  if (method !== "GET") {
+    const params = new URLSearchParams();
+    params.set("_method", method);
+    if (options?.body) {
+      params.set("_body", options.body as string);
+    }
+    fetchUrl = `${url}?${params.toString()}`;
+    fetchOptions = {};
+  }
+
   let res: Response;
   try {
-    res = await fetch(url, {
-      ...options,
+    res = await fetch(fetchUrl, {
+      ...fetchOptions,
       headers: {
         "Content-Type": "application/json",
         "Origin": "https://service-manager-businessware.replit.app",
         "Referer": "https://service-manager-businessware.replit.app/",
-        ...(options?.headers || {}),
+        ...(fetchOptions?.headers || {}),
       },
     });
   } catch (networkErr: unknown) {

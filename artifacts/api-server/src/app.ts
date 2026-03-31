@@ -8,10 +8,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logger
+// Method override: allows GET requests to act as POST/PATCH/DELETE
+// Used by mobile clients on networks that block non-GET HTTP methods
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  if (req.method !== "GET") {
-    console.log(`[${req.method}] ${req.path} — origin: ${req.headers.origin || "none"} ua: ${(req.headers["user-agent"] || "").substring(0, 60)}`);
+  if (req.method === "GET" && req.query._method) {
+    const override = (req.query._method as string).toUpperCase();
+    const bodyStr = req.query._body as string | undefined;
+    req.method = override;
+    if (bodyStr) {
+      try { req.body = JSON.parse(bodyStr); } catch { req.body = {}; }
+    }
+    delete req.query._method;
+    delete req.query._body;
+    console.log(`[OVERRIDE→${override}] ${req.path}`);
   }
   next();
 });
