@@ -58,7 +58,7 @@ export function generateTSPLLabel(params: {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LABEL 2 — Customer voucher (customer takes home)
-// Size: 60 mm × 60 mm | Larger label so it's easy to read
+// Size: 60 mm × 40 mm | Same roll as device label
 // QR code links to the PUBLIC status page — customer scans from home to track
 // ─────────────────────────────────────────────────────────────────────────────
 export function generateCustomerVoucherLabel(params: {
@@ -81,39 +81,36 @@ export function generateCustomerVoucherLabel(params: {
   } = params;
 
   const statusUrl = buildStatusUrl(serviceId);
-  const cust      = customerName.substring(0, 24);
-  const device    = `${deviceBrand} ${deviceModel}`.substring(0, 24);
+  const cust      = customerName.substring(0, 22);
+  const device    = `${deviceBrand} ${deviceModel}`.substring(0, 22);
   const shop      = shopName.substring(0, 26);
   const phone     = shopPhone.substring(0, 20);
 
+  // At 203 dpi: 40 mm = 320 dots, 60 mm = 480 dots
+  // Left column: X=10, text only. Right column QR: X=340, module size 3 → ~75 dots wide
   const lines: string[] = [
-    "SIZE 60 mm, 60 mm",
+    "SIZE 60 mm, 40 mm",
     "GAP 2 mm, 0",
     "DIRECTION 0",
     "CLS",
 
-    // ── Header: shop name ─────────────────────────────────────────
+    // ── Header: shop name + phone ──────────────────────────────────
     `TEXT 10,5,"2",0,1,1,"${shop}"`,
-    ...(phone ? [`TEXT 10,28,"1",0,1,1,"${phone}"`] : []),
+    ...(phone ? [`TEXT 10,27,"1",0,1,1,"Tel: ${phone}"`] : []),
 
-    // ── Divider line ─────────────────────────────────────────────
-    "BAR 10,45,460,2",
+    // ── Divider ───────────────────────────────────────────────────
+    "BAR 10,42,460,2",
 
-    // ── Left column: ticket info ──────────────────────────────────
-    `TEXT 10,55,"3",0,1,1,"${serviceId.substring(0, 18)}"`,
-    `TEXT 10,88,"2",0,1,1,"${cust}"`,
-    `TEXT 10,112,"2",0,1,1,"${device}"`,
-    `TEXT 10,136,"1",0,1,1,"${date}"`,
+    // ── Left column: ticket info ───────────────────────────────────
+    `TEXT 10,50,"2",0,1,1,"${serviceId.substring(0, 18)}"`,
+    `TEXT 10,78,"1",0,1,1,"${cust}"`,
+    `TEXT 10,94,"1",0,1,1,"${device}"`,
+    `TEXT 10,110,"1",0,1,1,"${date}"`,
+    `TEXT 10,126,"1",0,1,1,"Σκανάρετε το QR"`,
+    `TEXT 10,142,"1",0,1,1,"για κατάσταση επισκευής"`,
 
-    // ── Right column: QR code with PUBLIC status URL ───────────────
-    // Customer scans this to track their repair online
-    `QRCODE 340,55,"M",4,A,0,"${statusUrl}"`,
-    `TEXT 340,165,"1",0,1,1,"SCAN ME"`,
-
-    // ── Footer ────────────────────────────────────────────────────
-    "BAR 10,182,460,2",
-    `TEXT 10,190,"1",0,1,1,"Σκανάρετε για ενημέρωση κατάστασης"`,
-    `TEXT 10,206,"1",0,1,1,"επισκευής χωρίς τηλεφώνημα"`,
+    // ── Right column: QR with public status URL ────────────────────
+    `QRCODE 335,47,"M",3,A,0,"${statusUrl}"`,
 
     "PRINT 1",
     "",
