@@ -258,10 +258,12 @@ const styles = StyleSheet.create({
   summaryLabel: {
     fontSize: 13,
     fontFamily: "Inter_500Medium",
+    flexShrink: 0,
   },
   summaryCount: {
     fontSize: 13,
     fontFamily: "Inter_700Bold",
+    flexShrink: 0,
   },
   searchRow: {
     paddingHorizontal: 16,

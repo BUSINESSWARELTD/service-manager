@@ -5,7 +5,6 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -29,6 +28,8 @@ const queryClient = new QueryClient({
 // On native, we use useFonts which bundles the TTF files.
 function useAppFonts() {
   const [webReady, setWebReady] = useState(Platform.OS === "web");
+  // Icon fonts (@expo/vector-icons v15 + SDK 54) are auto-bundled by the build system.
+  // Only load custom Inter fonts here.
   const [fontsLoaded, fontError] = useFonts(
     Platform.OS === "web"
       ? {} // empty on web — CSS handles it
@@ -37,9 +38,6 @@ function useAppFonts() {
           Inter_500Medium,
           Inter_600SemiBold,
           Inter_700Bold,
-          ...MaterialCommunityIcons.font,
-          ...Ionicons.font,
-          ...Feather.font,
         }
   );
 
