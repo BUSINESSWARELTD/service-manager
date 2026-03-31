@@ -8,6 +8,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logger
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  if (req.method !== "GET") {
+    console.log(`[${req.method}] ${req.path} — origin: ${req.headers.origin || "none"} ua: ${(req.headers["user-agent"] || "").substring(0, 60)}`);
+  }
+  next();
+});
+
 app.use("/api", router);
 
 // Global error handler — catches unhandled async errors in routes
