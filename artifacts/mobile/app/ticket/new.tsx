@@ -33,7 +33,8 @@ export default function NewTicketScreen() {
   const insets = useSafeAreaInsets();
   const { technician } = useAuth();
   const queryClient = useQueryClient();
-  const params = useLocalSearchParams<{ barcode?: string }>();
+  const rawParams = useLocalSearchParams<{ barcode?: string | string[] }>();
+  const params = { barcode: Array.isArray(rawParams.barcode) ? rawParams.barcode[0] : rawParams.barcode };
   const [loading, setLoading] = useState(false);
   const [successTicket, setSuccessTicket] = useState<{ id: number; serviceId: string } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -105,8 +106,8 @@ export default function NewTicketScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setSuccessTicket({ id: ticket.id, serviceId: ticket.serviceId });
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Αποτυχία δημιουργίας ticket";
-      setErrors({ submit: msg });
+      const msg = e instanceof Error ? e.message : String(e);
+      setErrors({ submit: msg || "Αποτυχία δημιουργίας ticket" });
     } finally {
       setLoading(false);
     }
@@ -306,8 +307,8 @@ export default function NewTicketScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <MaterialCommunityIcons name="ticket-plus" size={22} color="#fff" />
               <Text style={styles.submitText}>Δημιουργία Ticket</Text>
+              <MaterialCommunityIcons name="ticket-plus" size={22} color="#fff" />
             </>
           )}
         </TouchableOpacity>
