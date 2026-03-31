@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -20,35 +20,60 @@ export default function ScanScreen() {
   const insets = useSafeAreaInsets();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [notFound, setNotFound] = useState(false);
+  const [lastScanned, setLastScanned] = useState("");
   const inputRef = useRef<TextInput>(null);
+  const refocusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const topPadding = Platform.OS === "web" ? 67 : insets.top;
   const bottomPadding = Platform.OS === "web" ? 34 : insets.bottom;
 
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
+
   useEffect(() => {
-    // Auto-focus for ME61 hardware scanner
-    setTimeout(() => inputRef.current?.focus(), 300);
+    const timer = setTimeout(focusInput, 300);
+    return () => clearTimeout(timer);
+  }, [focusInput]);
+
+  const handleBlur = useCallback(() => {
+    if (refocusTimer.current) clearTimeout(refocusTimer.current);
+    refocusTimer.current = setTimeout(focusInput, 150);
+  }, [focusInput]);
+
+  useEffect(() => {
+    return () => {
+      if (refocusTimer.current) clearTimeout(refocusTimer.current);
+    };
   }, []);
 
   const handleSearch = async (val?: string) => {
-    const query = (val || input).trim();
+    const query = (val ?? input).trim();
     if (!query) return;
 
     setLoading(true);
-    setError("");
+    setNotFound(false);
+    setLastScanned(query);
 
     try {
       const ticket = await api.tickets.getByServiceId(query);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.push({ pathname: "/ticket/[id]", params: { id: ticket.id.toString() } });
       setInput("");
+      setNotFound(false);
     } catch {
-      setError(`No ticket found for: ${query}`);
+      setNotFound(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCreateNew = () => {
+    setNotFound(false);
+    setInput("");
+    router.push({ pathname: "/ticket/new", params: { barcode: lastScanned } });
   };
 
   return (
@@ -81,8 +106,9 @@ export default function ScanScreen() {
             placeholder="SRV-20260318-1234"
             placeholderTextColor={Colors.light.textSecondary}
             value={input}
-            onChangeText={val => { setInput(val); setError(""); }}
+            onChangeText={val => { setInput(val); setNotFound(false); }}
             onSubmitEditing={() => handleSearch()}
+            onBlur={handleBlur}
             returnKeyType="search"
             autoCapitalize="characters"
             autoCorrect={false}
@@ -101,10 +127,19 @@ export default function ScanScreen() {
           </TouchableOpacity>
         </View>
 
-        {error ? (
-          <View style={styles.errorBox}>
-            <Ionicons name="alert-circle" size={18} color="#EF4444" />
-            <Text style={styles.errorText}>{error}</Text>
+        {/* Not found — offer to create new ticket */}
+        {notFound ? (
+          <View style={styles.notFoundBox}>
+            <View style={styles.notFoundRow}>
+              <Ionicons name="alert-circle" size={18} color="#EF4444" />
+              <Text style={styles.notFoundText}>
+                Δεν βρέθηκε δελτίο για: <Text style={styles.notFoundCode}>{lastScanned}</Text>
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.createBtn} onPress={handleCreateNew}>
+              <Ionicons name="add-circle-outline" size={18} color="#fff" />
+              <Text style={styles.createBtnText}>Δημιουργία Νέου Δελτίου</Text>
+            </TouchableOpacity>
           </View>
         ) : null}
 
@@ -114,7 +149,7 @@ export default function ScanScreen() {
           {[
             "Χρησιμοποιήστε το κουμπί σκανδάλης του ME61 για ενεργοποίηση",
             "Η σάρωση barcode ανοίγει αυτόματα το δελτίο",
-            "Μορφή κωδικού: SRV-YYYYMMDD-XXXX",
+            "Αν δεν βρεθεί δελτίο, μπορείτε να δημιουργήσετε νέο",
           ].map((tip, i) => (
             <View key={i} style={styles.tip}>
               <View style={styles.tipDot} />
@@ -212,21 +247,41 @@ const styles = StyleSheet.create({
   searchBtnDisabled: {
     opacity: 0.5,
   },
-  errorBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    padding: 12,
-    borderRadius: 12,
+  notFoundBox: {
+    borderRadius: 14,
     backgroundColor: "#FEF2F2",
     borderWidth: 1,
     borderColor: "#FECACA",
+    padding: 14,
+    gap: 12,
   },
-  errorText: {
+  notFoundRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  notFoundText: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: "#EF4444",
     flex: 1,
+  },
+  notFoundCode: {
+    fontFamily: "Inter_700Bold",
+  },
+  createBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: Colors.brand.primary,
+    borderRadius: 10,
+    paddingVertical: 12,
+  },
+  createBtnText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
   },
   tips: {
     backgroundColor: Colors.light.card,

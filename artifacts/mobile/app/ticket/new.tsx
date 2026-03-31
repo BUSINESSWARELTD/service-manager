@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Modal,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -33,6 +33,7 @@ export default function NewTicketScreen() {
   const insets = useSafeAreaInsets();
   const { technician } = useAuth();
   const queryClient = useQueryClient();
+  const params = useLocalSearchParams<{ barcode?: string }>();
   const [loading, setLoading] = useState(false);
   const [successTicket, setSuccessTicket] = useState<{ id: number; serviceId: string } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -46,9 +47,16 @@ export default function NewTicketScreen() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [deviceBrand, setDeviceBrand] = useState("");
   const [deviceModel, setDeviceModel] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
   const [problemDescription, setProblemDescription] = useState("");
   const [estimatedCompletion, setEstimatedCompletion] = useState("");
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (params.barcode) {
+      setSerialNumber(params.barcode);
+    }
+  }, [params.barcode]);
 
   const bottomPadding = Platform.OS === "web" ? 34 : insets.bottom;
 
@@ -77,13 +85,18 @@ export default function NewTicketScreen() {
 
     setLoading(true);
     try {
+      const sn = serialNumber.trim();
+      const finalDescription = sn
+        ? `${problemDescription.trim()}\n[S/N: ${sn}]`
+        : problemDescription.trim();
+
       const ticket = await api.tickets.create({
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
         customerEmail: customerEmail.trim() || null,
         deviceBrand: deviceBrand.trim(),
         deviceModel: deviceModel.trim(),
-        problemDescription: problemDescription.trim(),
+        problemDescription: finalDescription,
         technicianId: technician?.id || null,
         estimatedCompletion: estimatedCompletion.trim() || null,
       });
@@ -110,6 +123,17 @@ export default function NewTicketScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Scanned Barcode Banner */}
+        {params.barcode ? (
+          <View style={styles.barcodeBanner}>
+            <Ionicons name="barcode-outline" size={20} color={Colors.brand.primary} />
+            <Text style={styles.bannerText}>
+              Barcode σαρώθηκε:{" "}
+              <Text style={styles.bannerCode}>{params.barcode}</Text>
+            </Text>
+          </View>
+        ) : null}
+
         {/* Customer Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Στοιχεία Πελάτη</Text>
@@ -197,6 +221,19 @@ export default function NewTicketScreen() {
                 placeholderTextColor={Colors.light.textSecondary}
               />
               <Field error={errors.deviceModel} />
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Αριθμός Σειράς / Barcode</Text>
+              <TextInput
+                style={styles.input}
+                value={serialNumber}
+                onChangeText={setSerialNumber}
+                placeholder="π.χ. 1234567890"
+                placeholderTextColor={Colors.light.textSecondary}
+                autoCapitalize="characters"
+                autoCorrect={false}
+              />
             </View>
           </View>
         </View>
@@ -487,4 +524,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalBtnPrimaryText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  barcodeBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: "#FFF7ED",
+    borderWidth: 1,
+    borderColor: "#FDBA74",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  },
+  bannerText: {
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    color: "#92400E",
+    flex: 1,
+  },
+  bannerCode: {
+    fontFamily: "Inter_700Bold",
+    color: Colors.brand.primary,
+  },
 });
