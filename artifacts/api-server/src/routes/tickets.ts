@@ -151,6 +151,7 @@ router.post("/tickets", async (req, res): Promise<void> => {
   const voucherLabel = generateCustomerVoucherLabel({
     serviceId,
     customerName,
+    customerPhone,
     deviceBrand,
     deviceModel,
     date: dateStr,
