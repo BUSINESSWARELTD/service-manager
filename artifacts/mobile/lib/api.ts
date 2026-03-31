@@ -10,6 +10,8 @@ async function apiFetch(path: string, options?: RequestInit) {
       ...options,
       headers: {
         "Content-Type": "application/json",
+        "Origin": "https://service-manager-businessware.replit.app",
+        "Referer": "https://service-manager-businessware.replit.app/",
         ...(options?.headers || {}),
       },
     });
