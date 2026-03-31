@@ -4,16 +4,29 @@ const BASE = process.env.EXPO_PUBLIC_DOMAIN
 
 async function apiFetch(path: string, options?: RequestInit) {
   const url = `${BASE}${path}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers || {}),
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options?.headers || {}),
+      },
+    });
+  } catch (networkErr: unknown) {
+    const msg = networkErr instanceof Error ? networkErr.message : String(networkErr);
+    throw new Error(`Σφάλμα δικτύου: ${msg}`);
+  }
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || "Request failed");
+    let errMsg = `HTTP ${res.status}`;
+    try {
+      const body = await res.text();
+      const parsed = JSON.parse(body);
+      errMsg = parsed.error || parsed.message || body || errMsg;
+    } catch {
+      errMsg = res.statusText || errMsg;
+    }
+    throw new Error(errMsg);
   }
   if (res.status === 204) return null;
   return res.json();
