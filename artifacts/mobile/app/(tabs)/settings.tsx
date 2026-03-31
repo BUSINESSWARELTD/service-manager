@@ -187,8 +187,8 @@ export default function SettingsScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Admin configuration</Text>
+        <Text style={styles.title}>Ρυθμίσεις</Text>
+        <Text style={styles.subtitle}>Διαχείριση & Παραμετροποίηση</Text>
       </View>
 
       <View style={styles.techCard}>
@@ -197,11 +197,11 @@ export default function SettingsScreen() {
         </View>
         <View style={styles.techInfo}>
           <Text style={styles.techName}>{technician?.name}</Text>
-          <Text style={styles.techRole}>{technician?.role === "manager" ? "Manager" : "Technician"}</Text>
+          <Text style={styles.techRole}>{technician?.role === "manager" ? "Διαχειριστής" : "Τεχνικός"}</Text>
         </View>
         <TouchableOpacity style={styles.logoutBtn} onPress={() => logout()}>
           <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>Αποσύνδεση</Text>
         </TouchableOpacity>
       </View>
 
@@ -242,12 +242,12 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Ionicons name="cash-outline" size={20} color={Colors.brand.primary} />
-          <Text style={styles.sectionTitle}>Billing</Text>
+          <Text style={styles.sectionTitle}>Τιμολόγηση</Text>
         </View>
         <View style={styles.sectionCard}>
-          <SettingRow label="Hourly Rate (€)" value={hourlyRate} onChangeText={setHourlyRate} placeholder="30" keyboardType="decimal-pad" />
+          <SettingRow label="Ωριαία Χρέωση (€)" value={hourlyRate} onChangeText={setHourlyRate} placeholder="30" keyboardType="decimal-pad" />
           <View style={styles.divider} />
-          <SettingRow label="VAT Rate (%)" value={vatRate} onChangeText={setVatRate} placeholder="24" keyboardType="decimal-pad" />
+          <SettingRow label="ΦΠΑ (%)" value={vatRate} onChangeText={setVatRate} placeholder="24" keyboardType="decimal-pad" />
         </View>
       </View>
 
@@ -275,9 +275,9 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Label Printer (TSC MB241T)</Text>
         </View>
         <View style={styles.sectionCard}>
-          <SettingRow label="Printer IP Address" value={printerIp} onChangeText={setPrinterIp} placeholder="192.168.1.100" />
+          <SettingRow label="IP Εκτυπωτή" value={printerIp} onChangeText={setPrinterIp} placeholder="192.168.1.100" />
           <View style={styles.divider} />
-          <SettingRow label="Printer Port" value={printerPort} onChangeText={setPrinterPort} placeholder="9100" keyboardType="numeric" />
+          <SettingRow label="Port Εκτυπωτή" value={printerPort} onChangeText={setPrinterPort} placeholder="9100" keyboardType="numeric" />
         </View>
       </View>
 
@@ -285,14 +285,14 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialCommunityIcons name="message-text" size={20} color={Colors.brand.primary} />
-          <Text style={styles.sectionTitle}>SMS Notifications (Twilio)</Text>
+          <Text style={styles.sectionTitle}>Ειδοποιήσεις SMS (Twilio)</Text>
         </View>
         <View style={styles.sectionCard}>
           <SettingRow label="Account SID" value={twilioSid} onChangeText={setTwilioSid} placeholder="AC..." />
           <View style={styles.divider} />
           <SettingRow label="Auth Token" value={twilioToken} onChangeText={setTwilioToken} placeholder="••••••" secureTextEntry />
           <View style={styles.divider} />
-          <SettingRow label="From Number" value={twilioFrom} onChangeText={setTwilioFrom} placeholder="+1234567890" />
+          <SettingRow label="Αριθμός Αποστολής" value={twilioFrom} onChangeText={setTwilioFrom} placeholder="+1234567890" />
         </View>
       </View>
 
@@ -300,18 +300,18 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Ionicons name="mail-outline" size={20} color={Colors.brand.primary} />
-          <Text style={styles.sectionTitle}>Email Notifications</Text>
+          <Text style={styles.sectionTitle}>Ειδοποιήσεις Email</Text>
         </View>
         <View style={styles.sectionCard}>
           <SettingRow label="SMTP Host" value={emailHost} onChangeText={setEmailHost} placeholder="smtp.gmail.com" />
           <View style={styles.divider} />
           <SettingRow label="SMTP Port" value={emailPort} onChangeText={setEmailPort} placeholder="587" keyboardType="numeric" />
           <View style={styles.divider} />
-          <SettingRow label="Username" value={emailUser} onChangeText={setEmailUser} placeholder="your@email.com" keyboardType="email-address" />
+          <SettingRow label="Χρήστης" value={emailUser} onChangeText={setEmailUser} placeholder="your@email.com" keyboardType="email-address" />
           <View style={styles.divider} />
-          <SettingRow label="Password" value={emailPass} onChangeText={setEmailPass} placeholder="••••••" secureTextEntry />
+          <SettingRow label="Κωδικός" value={emailPass} onChangeText={setEmailPass} placeholder="••••••" secureTextEntry />
           <View style={styles.divider} />
-          <SettingRow label="From Email" value={emailFrom} onChangeText={setEmailFrom} placeholder="noreply@shop.com" keyboardType="email-address" />
+          <SettingRow label="Email Αποστολής" value={emailFrom} onChangeText={setEmailFrom} placeholder="noreply@shop.com" keyboardType="email-address" />
         </View>
       </View>
 
@@ -319,10 +319,10 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialCommunityIcons name="account-group" size={20} color={Colors.brand.primary} />
-          <Text style={styles.sectionTitle}>Team</Text>
+          <Text style={styles.sectionTitle}>Ομάδα</Text>
         </View>
         <TouchableOpacity style={styles.actionRow} onPress={() => router.push("/technicians")}>
-          <Text style={styles.actionRowText}>Manage Technicians</Text>
+          <Text style={styles.actionRowText}>Διαχείριση Τεχνικών</Text>
           <Ionicons name="chevron-forward" size={18} color={Colors.light.textSecondary} />
         </TouchableOpacity>
       </View>
@@ -331,10 +331,10 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialCommunityIcons name="package-variant" size={20} color={Colors.brand.primary} />
-          <Text style={styles.sectionTitle}>Inventory</Text>
+          <Text style={styles.sectionTitle}>Αποθήκη</Text>
         </View>
         <TouchableOpacity style={styles.actionRow} onPress={() => router.push("/parts")}>
-          <Text style={styles.actionRowText}>Manage Parts Inventory</Text>
+          <Text style={styles.actionRowText}>Διαχείριση Ανταλλακτικών</Text>
           <Ionicons name="chevron-forward" size={18} color={Colors.light.textSecondary} />
         </TouchableOpacity>
       </View>
@@ -360,7 +360,7 @@ export default function SettingsScreen() {
       <View style={styles.actionsSection}>
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
           {saving ? <ActivityIndicator size="small" color="#fff" /> : <Ionicons name="save-outline" size={20} color="#fff" />}
-          <Text style={styles.saveText}>Save Settings</Text>
+          <Text style={styles.saveText}>Αποθήκευση Ρυθμίσεων</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

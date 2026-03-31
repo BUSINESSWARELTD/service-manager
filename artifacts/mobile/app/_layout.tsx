@@ -5,6 +5,7 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
+import { MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -31,7 +32,15 @@ function useAppFonts() {
   const [fontsLoaded, fontError] = useFonts(
     Platform.OS === "web"
       ? {} // empty on web — CSS handles it
-      : { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold }
+      : {
+          Inter_400Regular,
+          Inter_500Medium,
+          Inter_600SemiBold,
+          Inter_700Bold,
+          ...MaterialCommunityIcons.font,
+          ...Ionicons.font,
+          ...Feather.font,
+        }
   );
 
   useEffect(() => {
@@ -70,8 +79,8 @@ export default function RootLayout() {
                   name="ticket/[id]"
                   options={{
                     headerShown: true,
-                    headerTitle: "Ticket Detail",
-                    headerBackTitle: "Back",
+                    headerTitle: "Στοιχεία Δελτίου",
+                    headerBackTitle: "Πίσω",
                     headerStyle: { backgroundColor: "#fff" },
                     headerTintColor: "#FF6B35",
                   }}
@@ -80,8 +89,8 @@ export default function RootLayout() {
                   name="ticket/new"
                   options={{
                     headerShown: true,
-                    headerTitle: "New Ticket",
-                    headerBackTitle: "Back",
+                    headerTitle: "Νέο Δελτίο",
+                    headerBackTitle: "Πίσω",
                     headerStyle: { backgroundColor: "#fff" },
                     headerTintColor: "#FF6B35",
                   }}
@@ -90,8 +99,8 @@ export default function RootLayout() {
                   name="status/[serviceId]"
                   options={{
                     headerShown: true,
-                    headerTitle: "Ticket Status",
-                    headerBackTitle: "Back",
+                    headerTitle: "Κατάσταση Δελτίου",
+                    headerBackTitle: "Πίσω",
                     headerStyle: { backgroundColor: "#fff" },
                     headerTintColor: "#FF6B35",
                   }}
@@ -100,8 +109,8 @@ export default function RootLayout() {
                   name="technicians"
                   options={{
                     headerShown: true,
-                    headerTitle: "Technicians",
-                    headerBackTitle: "Back",
+                    headerTitle: "Τεχνικοί",
+                    headerBackTitle: "Πίσω",
                     headerStyle: { backgroundColor: "#fff" },
                     headerTintColor: "#FF6B35",
                   }}
@@ -110,8 +119,8 @@ export default function RootLayout() {
                   name="parts"
                   options={{
                     headerShown: true,
-                    headerTitle: "Parts Inventory",
-                    headerBackTitle: "Back",
+                    headerTitle: "Ανταλλακτικά",
+                    headerBackTitle: "Πίσω",
                     headerStyle: { backgroundColor: "#fff" },
                     headerTintColor: "#FF6B35",
                   }}

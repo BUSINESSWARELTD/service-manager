@@ -22,13 +22,13 @@ import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 
 const STATUSES = [
-  { key: "all", label: "All" },
-  { key: "received", label: "Received" },
-  { key: "diagnosing", label: "Diagnose" },
-  { key: "repairing", label: "Repairing" },
-  { key: "waiting_for_parts", label: "Waiting" },
-  { key: "ready_for_pickup", label: "Ready" },
-  { key: "delivered", label: "Delivered" },
+  { key: "all", label: "Όλα" },
+  { key: "received", label: "Παραλαβή" },
+  { key: "diagnosing", label: "Διάγνωση" },
+  { key: "repairing", label: "Επισκευή" },
+  { key: "waiting_for_parts", label: "Αναμονή" },
+  { key: "ready_for_pickup", label: "Έτοιμο" },
+  { key: "delivered", label: "Παραδόθηκε" },
 ];
 
 export default function TicketsScreen() {
@@ -78,7 +78,7 @@ export default function TicketsScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>Workshop</Text>
-          <Text style={styles.techName}>{technician?.name || "Guest"}</Text>
+          <Text style={styles.techName}>{technician?.name || "Επισκέπτης"}</Text>
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.iconBtn} onPress={handleScan}>
@@ -119,7 +119,7 @@ export default function TicketsScreen() {
           <Ionicons name="search" size={18} color={Colors.light.textSecondary} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search customer or ID..."
+            placeholder="Αναζήτηση πελάτη ή ID..."
             placeholderTextColor={Colors.light.textSecondary}
             value={search}
             onChangeText={setSearch}
@@ -179,9 +179,9 @@ export default function TicketsScreen() {
           ListEmptyComponent={
             <View style={styles.empty}>
               <MaterialCommunityIcons name="ticket-outline" size={56} color={Colors.light.border} />
-              <Text style={styles.emptyTitle}>No tickets found</Text>
+              <Text style={styles.emptyTitle}>Δεν βρέθηκαν δελτία</Text>
               <Text style={styles.emptyText}>
-                {search ? "Try a different search" : "Create a new ticket to get started"}
+                {search ? "Δοκιμάστε διαφορετική αναζήτηση" : "Δημιουργήστε ένα νέο δελτίο για να ξεκινήσετε"}
               </Text>
             </View>
           }

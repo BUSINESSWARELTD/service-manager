@@ -55,8 +55,8 @@ export default function ScanScreen() {
     <View style={[styles.container, { paddingTop: topPadding, paddingBottom: bottomPadding }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Quick Scan</Text>
-        <Text style={styles.subtitle}>Scan a barcode or enter Service ID</Text>
+        <Text style={styles.title}>Γρήγορη Σάρωση</Text>
+        <Text style={styles.subtitle}>Σαρώστε ένα barcode ή εισάγετε κωδικό δελτίου</Text>
       </View>
 
       {/* Scanner Viewfinder */}
@@ -65,15 +65,15 @@ export default function ScanScreen() {
           <MaterialCommunityIcons name="barcode-scan" size={80} color={Colors.brand.primary} />
           <Text style={styles.viewfinderText}>
             {Platform.OS !== "web"
-              ? "Point your scanner at a barcode\nor enter the Service ID below"
-              : "Enter the Service ID below"}
+              ? "Στρέψτε τον σαρωτή σε ένα barcode\nή εισάγετε τον κωδικό παρακάτω"
+              : "Εισάγετε τον κωδικό δελτίου παρακάτω"}
           </Text>
         </View>
       </View>
 
       {/* Input */}
       <View style={styles.inputSection}>
-        <Text style={styles.inputLabel}>Service ID / Barcode</Text>
+        <Text style={styles.inputLabel}>Κωδικός Δελτίου / Barcode</Text>
         <View style={styles.inputRow}>
           <TextInput
             ref={inputRef}
@@ -110,11 +110,11 @@ export default function ScanScreen() {
 
         {/* Quick Tips */}
         <View style={styles.tips}>
-          <Text style={styles.tipsTitle}>Tips</Text>
+          <Text style={styles.tipsTitle}>Συμβουλές</Text>
           {[
-            "Use the ME61 trigger key to activate the scanner",
-            "Barcode scan automatically opens the ticket",
-            "Service ID format: SRV-YYYYMMDD-XXXX",
+            "Χρησιμοποιήστε το κουμπί σκανδάλης του ME61 για ενεργοποίηση",
+            "Η σάρωση barcode ανοίγει αυτόματα το δελτίο",
+            "Μορφή κωδικού: SRV-YYYYMMDD-XXXX",
           ].map((tip, i) => (
             <View key={i} style={styles.tip}>
               <View style={styles.tipDot} />

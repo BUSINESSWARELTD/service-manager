@@ -15,12 +15,12 @@ import Colors, { STATUS_COLORS } from "@/constants/colors";
 import { api } from "@/lib/api";
 
 const STATUS_STEPS = [
-  { key: "received", label: "Received", icon: "receipt" as const },
-  { key: "diagnosing", label: "Diagnosing", icon: "magnify" as const },
-  { key: "repairing", label: "Repairing", icon: "wrench" as const },
-  { key: "waiting_for_parts", label: "Waiting for Parts", icon: "clock-outline" as const },
-  { key: "ready_for_pickup", label: "Ready for Pickup", icon: "check-circle-outline" as const },
-  { key: "delivered", label: "Delivered", icon: "package-check" as const },
+  { key: "received", label: "Παραλαβή", icon: "receipt" as const },
+  { key: "diagnosing", label: "Διάγνωση", icon: "magnify" as const },
+  { key: "repairing", label: "Επισκευή", icon: "wrench" as const },
+  { key: "waiting_for_parts", label: "Αναμονή Ανταλλακτικών", icon: "clock-outline" as const },
+  { key: "ready_for_pickup", label: "Έτοιμο για Παραλαβή", icon: "check-circle-outline" as const },
+  { key: "delivered", label: "Παραδόθηκε", icon: "package-check" as const },
 ];
 
 export default function PublicStatusScreen() {

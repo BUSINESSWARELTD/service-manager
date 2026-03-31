@@ -15,9 +15,9 @@ import Colors from "@/constants/colors";
 import { api } from "@/lib/api";
 
 const PERIODS = [
-  { key: "week", label: "7 Days" },
-  { key: "month", label: "30 Days" },
-  { key: "year", label: "12 Months" },
+  { key: "week", label: "7 Ημέρες" },
+  { key: "month", label: "30 Ημέρες" },
+  { key: "year", label: "12 Μήνες" },
 ];
 
 type StatCardProps = {
@@ -59,8 +59,8 @@ export default function AnalyticsScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Analytics</Text>
-        <Text style={styles.subtitle}>Workshop performance overview</Text>
+        <Text style={styles.title}>Στατιστικά</Text>
+        <Text style={styles.subtitle}>Επισκόπηση απόδοσης εργαστηρίου</Text>
       </View>
 
       {/* Period Selector */}
@@ -88,25 +88,25 @@ export default function AnalyticsScreen() {
           <View style={styles.statsGrid}>
             <StatCard
               icon="cash-outline"
-              label="Total Revenue"
+              label="Συνολικά Έσοδα"
               value={`€${Number(data?.totalRevenue || 0).toFixed(2)}`}
               color={Colors.brand.primary}
             />
             <StatCard
               icon="ticket-outline"
-              label="Total Jobs"
+              label="Συνολικές Εργασίες"
               value={String(data?.totalTickets || 0)}
               color="#3B82F6"
             />
             <StatCard
               icon="checkmark-circle-outline"
-              label="Completed"
+              label="Ολοκληρωμένες"
               value={String(data?.completedTickets || 0)}
               color="#22C55E"
             />
             <StatCard
               icon="time-outline"
-              label="Avg Repair Time"
+              label="Μέσος Χρόνος"
               value={`${Number(data?.averageRepairTime || 0).toFixed(1)}h`}
               color="#F97316"
             />

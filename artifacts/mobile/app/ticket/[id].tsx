@@ -24,12 +24,12 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
 const STATUS_FLOW = [
-  { key: "received", label: "Received" },
-  { key: "diagnosing", label: "Diagnosing" },
-  { key: "repairing", label: "Repairing" },
-  { key: "waiting_for_parts", label: "Waiting Parts" },
-  { key: "ready_for_pickup", label: "Ready" },
-  { key: "delivered", label: "Delivered" },
+  { key: "received", label: "Παραλαβή" },
+  { key: "diagnosing", label: "Διάγνωση" },
+  { key: "repairing", label: "Επισκευή" },
+  { key: "waiting_for_parts", label: "Αναμονή Ανταλλακτικών" },
+  { key: "ready_for_pickup", label: "Έτοιμο" },
+  { key: "delivered", label: "Παραδόθηκε" },
 ];
 
 export default function TicketDetailScreen() {
@@ -253,10 +253,10 @@ export default function TicketDetailScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <MaterialCommunityIcons name="account" size={18} color={Colors.brand.primary} />
-            <Text style={styles.cardTitle}>Customer</Text>
+            <Text style={styles.cardTitle}>Πελάτης</Text>
           </View>
-          <InfoRow label="Name" value={ticket.customerName} />
-          <InfoRow label="Phone" value={ticket.customerPhone} />
+          <InfoRow label="Όνομα" value={ticket.customerName} />
+          <InfoRow label="Τηλέφωνο" value={ticket.customerPhone} />
           {ticket.customerEmail ? <InfoRow label="Email" value={ticket.customerEmail} /> : null}
         </View>
 
@@ -264,13 +264,13 @@ export default function TicketDetailScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <MaterialCommunityIcons name="cellphone" size={18} color={Colors.brand.primary} />
-            <Text style={styles.cardTitle}>Device</Text>
+            <Text style={styles.cardTitle}>Συσκευή</Text>
           </View>
-          <InfoRow label="Brand" value={ticket.deviceBrand} />
-          <InfoRow label="Model" value={ticket.deviceModel} />
-          <InfoRow label="Problem" value={ticket.problemDescription} />
-          {ticket.estimatedCompletion ? <InfoRow label="ETA" value={ticket.estimatedCompletion} /> : null}
-          {ticket.technicianName ? <InfoRow label="Technician" value={ticket.technicianName} /> : null}
+          <InfoRow label="Μάρκα" value={ticket.deviceBrand} />
+          <InfoRow label="Μοντέλο" value={ticket.deviceModel} />
+          <InfoRow label="Βλάβη" value={ticket.problemDescription} />
+          {ticket.estimatedCompletion ? <InfoRow label="Παράδοση" value={ticket.estimatedCompletion} /> : null}
+          {ticket.technicianName ? <InfoRow label="Τεχνικός" value={ticket.technicianName} /> : null}
         </View>
 
         {/* QR Code — Customer Status Link */}
@@ -319,7 +319,7 @@ export default function TicketDetailScreen() {
                 onPress={() => handleStopTimer(runningLabor.id)}
               >
                 <Ionicons name="stop" size={18} color="#fff" />
-                <Text style={styles.stopBtnText}>Stop</Text>
+                <Text style={styles.stopBtnText}>Τέλος</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -330,17 +330,17 @@ export default function TicketDetailScreen() {
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardHeader}>
               <MaterialCommunityIcons name="package-variant" size={18} color={Colors.brand.primary} />
-              <Text style={styles.cardTitle}>Parts Used</Text>
+              <Text style={styles.cardTitle}>Ανταλλακτικά</Text>
             </View>
             {ticket.status !== "delivered" ? (
               <TouchableOpacity style={styles.addBtn} onPress={() => setShowPartsModal(true)}>
                 <Ionicons name="add" size={18} color={Colors.brand.primary} />
-                <Text style={styles.addBtnText}>Add Part</Text>
+                <Text style={styles.addBtnText}>Προσθήκη</Text>
               </TouchableOpacity>
             ) : null}
           </View>
           {(ticket.parts || []).length === 0 ? (
-            <Text style={styles.emptySection}>No parts logged yet</Text>
+            <Text style={styles.emptySection}>Δεν έχουν καταχωρηθεί ανταλλακτικά</Text>
           ) : (
             (ticket.parts as Array<{ id: number; partName: string; quantity: number; unitPrice: number; totalPrice: number; warrantyPeriod?: string }>).map(p => (
               <View key={p.id} style={styles.partRow}>
@@ -359,7 +359,7 @@ export default function TicketDetailScreen() {
           )}
           {totalParts > 0 ? (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Parts Total</Text>
+              <Text style={styles.totalLabel}>Σύνολο Ανταλλακτικών</Text>
               <Text style={styles.totalValue}>€{totalParts.toFixed(2)}</Text>
             </View>
           ) : null}
@@ -370,23 +370,23 @@ export default function TicketDetailScreen() {
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardHeader}>
               <Ionicons name="time-outline" size={18} color={Colors.brand.primary} />
-              <Text style={styles.cardTitle}>Labor</Text>
+              <Text style={styles.cardTitle}>Εργατικά</Text>
             </View>
             {ticket.status !== "delivered" && !runningLabor ? (
               <TouchableOpacity style={styles.addBtn} onPress={() => setShowLaborModal(true)}>
                 <Ionicons name="add" size={18} color={Colors.brand.primary} />
-                <Text style={styles.addBtnText}>Log Labor</Text>
+                <Text style={styles.addBtnText}>Καταχώρηση</Text>
               </TouchableOpacity>
             ) : null}
           </View>
           {(ticket.laborEntries || []).length === 0 ? (
-            <Text style={styles.emptySection}>No labor logged yet</Text>
+            <Text style={styles.emptySection}>Δεν έχουν καταχωρηθεί εργατικά</Text>
           ) : (
             (ticket.laborEntries as Array<{ id: number; isRunning: boolean; totalHours?: number; laborCost?: number; technicianName?: string; manualHours?: number }>).map(l => (
               <View key={l.id} style={styles.laborRow}>
                 <View style={styles.laborInfo}>
                   <Text style={styles.laborHours}>
-                    {l.isRunning ? "Running..." : `${(l.totalHours || 0).toFixed(2)}h`}
+                    {l.isRunning ? "Σε εξέλιξη..." : `${(l.totalHours || 0).toFixed(2)}h`}
                   </Text>
                   {l.technicianName ? <Text style={styles.laborTech}>{l.technicianName}</Text> : null}
                 </View>
@@ -396,7 +396,7 @@ export default function TicketDetailScreen() {
           )}
           {totalLabor > 0 ? (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Labor Total</Text>
+              <Text style={styles.totalLabel}>Σύνολο Εργατικών</Text>
               <Text style={styles.totalValue}>€{totalLabor.toFixed(2)}</Text>
             </View>
           ) : null}
@@ -405,23 +405,23 @@ export default function TicketDetailScreen() {
         {/* Bill Summary */}
         {(ticket.totalAmount || 0) > 0 ? (
           <View style={styles.billCard}>
-            <Text style={styles.billTitle}>Bill Summary</Text>
+            <Text style={styles.billTitle}>Σύνοψη Χρέωσης</Text>
             <View style={styles.billRow}>
-              <Text style={styles.billLabel}>Parts</Text>
+              <Text style={styles.billLabel}>Ανταλλακτικά</Text>
               <Text style={styles.billValue}>€{(ticket.totalPartsAmount || 0).toFixed(2)}</Text>
             </View>
             <View style={styles.billRow}>
-              <Text style={styles.billLabel}>Labor</Text>
+              <Text style={styles.billLabel}>Εργατικά</Text>
               <Text style={styles.billValue}>€{(ticket.totalLaborAmount || 0).toFixed(2)}</Text>
             </View>
             <View style={[styles.billRow, styles.billTotal]}>
-              <Text style={styles.billTotalLabel}>Total (incl. VAT)</Text>
+              <Text style={styles.billTotalLabel}>Σύνολο (με ΦΠΑ)</Text>
               <Text style={styles.billTotalValue}>€{(ticket.totalAmount || 0).toFixed(2)}</Text>
             </View>
             {ticket.billConfirmed ? (
               <View style={styles.confirmedBadge}>
                 <Ionicons name="checkmark-circle" size={16} color="#22C55E" />
-                <Text style={styles.confirmedText}>Bill Confirmed</Text>
+                <Text style={styles.confirmedText}>Επιβεβαιωμένο</Text>
               </View>
             ) : null}
           </View>
@@ -432,7 +432,7 @@ export default function TicketDetailScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Ionicons name="document-text-outline" size={18} color={Colors.brand.primary} />
-              <Text style={styles.cardTitle}>Work Summary</Text>
+              <Text style={styles.cardTitle}>Περιγραφή Εργασίας</Text>
             </View>
             <Text style={styles.workSummaryText}>{ticket.workSummary}</Text>
           </View>
@@ -443,7 +443,7 @@ export default function TicketDetailScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <MaterialCommunityIcons name="history" size={18} color={Colors.brand.primary} />
-              <Text style={styles.cardTitle}>Activity Log</Text>
+              <Text style={styles.cardTitle}>Ιστορικό Ενεργειών</Text>
             </View>
             {(ticket.auditLog as Array<{ id: number; action: string; description: string; createdAt: string; technicianName?: string }>).slice(0, 8).map(a => (
               <View key={a.id} style={styles.auditRow}>
@@ -463,16 +463,16 @@ export default function TicketDetailScreen() {
             {!ticket.workSummary ? (
               <TouchableOpacity style={styles.actionBtn} onPress={() => setShowWorkSummaryModal(true)}>
                 <Ionicons name="document-text-outline" size={20} color={Colors.brand.primary} />
-                <Text style={styles.actionBtnText}>Submit Work Summary</Text>
+                <Text style={styles.actionBtnText}>Περίληψη Εργασίας</Text>
               </TouchableOpacity>
             ) : null}
             <TouchableOpacity style={styles.actionBtn} onPress={() => setShowNoteModal(true)}>
               <Ionicons name="chatbubble-outline" size={20} color={Colors.brand.primary} />
-              <Text style={styles.actionBtnText}>Add Note</Text>
+              <Text style={styles.actionBtnText}>Προσθήκη Σημείωσης</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.actionBtn, styles.actionBtnPrimary]} onPress={() => setShowStatusModal(true)}>
               <MaterialCommunityIcons name="swap-horizontal" size={20} color="#fff" />
-              <Text style={[styles.actionBtnText, styles.actionBtnTextPrimary]}>Change Status</Text>
+              <Text style={[styles.actionBtnText, styles.actionBtnTextPrimary]}>Αλλαγή Κατάστασης</Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -607,7 +607,7 @@ export default function TicketDetailScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Note</Text>
+              <Text style={styles.modalTitle}>Προσθήκη Σημείωσης</Text>
               <TouchableOpacity onPress={() => setShowNoteModal(false)}>
                 <Ionicons name="close" size={24} color={Colors.light.text} />
               </TouchableOpacity>
@@ -616,14 +616,14 @@ export default function TicketDetailScreen() {
               style={[styles.modalInput, styles.modalInputMultiline]}
               value={note}
               onChangeText={setNote}
-              placeholder="Add a note to this ticket..."
+              placeholder="Προσθέστε μια σημείωση για αυτό το δελτίο..."
               placeholderTextColor={Colors.light.textSecondary}
               multiline
               numberOfLines={4}
               textAlignVertical="top"
             />
             <TouchableOpacity style={[styles.modalBtn, { marginTop: 12 }]} onPress={handleAddNote}>
-              <Text style={styles.modalBtnText}>Add Note</Text>
+              <Text style={styles.modalBtnText}>Αποθήκευση Σημείωσης</Text>
             </TouchableOpacity>
           </View>
         </View>
